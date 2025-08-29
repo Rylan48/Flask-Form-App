@@ -117,7 +117,7 @@ This is a **Flask-based Python web application** demo version of the NW Fire Sys
   - `lxml`
   - `dropbox`
   - `gunicorn` — Optional
-  - 
+    
 Clone the repository:
 
  ```bash
@@ -131,9 +131,14 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Start the Flask app
+Start the Flask app:
 ```bash
 python FormApp.py
+```
+
+Go to:
+```bash
+http://127.0.0.1:5000/?access=demoauth
 ```
 
 ---
