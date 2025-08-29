@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Part List</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Part List</h1></header>
+
+<h2 style="margin-bottom: 25px;">This Is Only For Viewing Active Parts</h2>
+
+<button class="btn-70" id="JobUpdate1" onclick="location.href='{{ url_for('lists_bp.part_update') }}'">Update From Spectrum</button>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const updateBtn = document.getElementById("JobUpdate1");
+
+  if (updateBtn) {
+    updateBtn.addEventListener("click", function () {
+      updateBtn.disabled = true;
+      updateBtn.innerText = "Updating...";
+      // Redirect after small delay (so UI updates before navigation)
+      setTimeout(function() {
+        window.location.href = "{{ url_for('lists_bp.part_update') }}";
+      }, 100);
+    });
+  }
+});
+</script>
+
+<h3 style="margin-top: 15px;">Filter List</h3>
+
+  <div class="filter-row">
+    <label for="categoryFilter" class="top-label">Category:</label>
+    <select id="categoryFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="ASSY">Assemblies</option>
+      <option value="BFLO">Backflow</option>
+      <option value="BATT">Batteries</option>
+      <option value="BLK">Black Pipe/Fittings</option>
+      <option value="BRAC">Bracing</option>
+      <option value="BRS">Brass</option>
+      <option value="COPP">Copper</option>
+      <option value="PVC">Cpvc</option>
+      <option value="FDC">FDC Accessories</option>
+      <option value="FALA">Fire Alarm</option>
+      <option value="FEXT">Fire Extinguisher</option>
+      <option value="GALV">Galvanized</option>
+      <option value="GAUG">Gauges</option>
+      <option value="GRV">Grooved</option>
+      <option value="HANG">Hangers</option>
+      <option value="HARD">Hardware</option>
+      <option value="MECH">Mechanical</option>
+      <option value="PIPE">Pipe</option>
+      <option value="SRVC">Service</option>
+      <option value="HDS">Sprinkler Heads</option>
+      <option value="SWIT">Switches</option>
+      <option value="VLVS">Valves</option>
+      <option value="TRIM">Escutcheons & Trim</option>
+      <option value="MISC">Misc.</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="sizeFilter" class="top-label">Size:</label>
+    <select id="sizeFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value='1/2" '>1/2"</option>
+      <option value='3/4" '>3/4"</option>
+      <option value='1" '>1"</option>
+      <option value='1-1/4" '>1-1/4"</option>
+      <option value='1-1/2" '>1-1/2"</option>
+      <option value='2" '>2"</option>
+      <option value='2-1/2" '>2-1/2"</option>
+      <option value='3" '>3"</option>
+      <option value='3-1/2" '>3-1/2"</option>
+      <option value='4" '>4"</option>
+      <option value='4-1/2" '>4-1/2"</option>
+      <option value='5" '>5"</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="fittingFilter" class="top-label">Fittings:</label>
+    <select id="fittingFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="NIPPLE">Nipples</option>
+      <option value="90">Elbows 90°</option>
+      <option value="45">Elbows 45°</option>
+      <option value="22.5">Elbows 22.5°</option>
+      <option value="TEE">Tees</option>
+      <option value="COUP">Couplings</option>
+      <option value="CAP">Caps</option>
+      <option value="PLUG">Plugs</option>
+      <option value="BUSH">Bushings</option>
+      <option value="UNION">Unions</option>
+      <option value="ADAPT">Adapters</option>
+      <option value="REDUCER">Reducers</option>
+      <option value="CROSS">Crosses</option>
+      <option value="FLANGE">Flanges</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="warehouseSelect" class="top-label">Location:</label>
+    <select id="warehouseSelect" style="width: 230px;">
+    <option value="01">Main Warehouse</option>
+    {% for value, name in warehouse_options %}
+        <option value="{{ value }}">Vehicle #{{ name }}</option>
+    {% endfor %}
+    </select>
+  </div>
+
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="specificSearchToggle">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" style="color: #edf2f4;">Toggle Strict Search</span>
+    </div>
+
+    <script>
+    function getStrictState() {
+      return document.getElementById("specificSearchToggle").checked;
+    }
+
+    // Optional: keep `strict` updated live
+    document.getElementById("specificSearchToggle").addEventListener("change", function () {
+      console.log("Strict search is now:", getStrictState());
+    });
+    </script>
+
+
+    <button class="button-59">Clear Filters</button>
+
+    <input type="text" class="formInput" id="textFilter" placeholder="Search item..." style="margin: 10px; margin-top: 20px; padding: 5px; width: 230px; height: 35px;">
+
+    <table id="itemTable" class="table_fill">
+      <thead>
+      <tr>
+        <th>Item #</th>
+        <th>Item Description</th>
+        <th class="hidden-col">Item Category</th>
+        <th class="hidden-col">Standard Cost</th>
+        <th>Est. Quantity</th>
+        <th>Stock Location</th>
+      </tr>
+      </thead>
+      <tbody id="itemTableBody">
+        <!-- JS will populate rows here -->
+      </tbody>
+    </table>
+  </div>
+  <div id="clear"></div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const table = document.getElementById("itemTable");
+  if (!table) return;
+
+  const tbody = table.querySelector("tbody");
+
+  // --- Data ---
+  const rawParts = {{ raw_parts | tojson }};
+  const vehicleStocks = {{ vehicle_stocks_json | safe }};
+  const headers = table.querySelectorAll("thead th");
+  const locHeader = Array.from(headers).find(h => h.textContent.trim() === "Stock Location");
+
+  // Track hidden columns
+  const hiddenIndexes = [];
+  headers.forEach((th, idx) => {
+    if (th.classList.contains("hidden-col")) {
+      hiddenIndexes.push(idx);
+      th.style.display = "none";
+    }
+  });
+  function hideRowColumns(row) {
+    const cells = row.getElementsByTagName("td");
+    hiddenIndexes.forEach(i => {
+      if (cells[i]) cells[i].style.display = "none";
+    });
+  }
+
+  // --- Location parser ---
+  function parseLocation(loc) {
+    if (!loc || loc === "N/A") return { col: 999, row: 999 };
+    const match = loc.match(/^([A-Za-z]+)(\d+)$/);
+    if (match) {
+      const col = match[1].toUpperCase().charCodeAt(0);
+      const row = parseInt(match[2], 10);
+      return { col, row };
+    }
+    return { col: 999, row: 999 };
+  }
+
+  // --- Sort helper ---
+  function sortByLocation(parts) {
+    return parts.slice().sort((a, b) => {
+      const A = parseLocation(a.Inventory_Location);
+      const B = parseLocation(b.Inventory_Location);
+      if (A.col !== B.col) return A.col - B.col;
+      return A.row - B.row;
+    });
+  }
+
+  // --- Render rows ---
+  function renderRows(parts) {
+    tbody.innerHTML = "";
+    parts.forEach(part => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${part.Item_Code}</td>
+        <td>${part.Item_Description || "N/A"}</td>
+        <td class="hidden-col">${part.Item_Category || "N/A"}</td>
+        <td class="hidden-col">${part.Standard_Cost || 0}</td>
+        <td>${part.Stock_Quantity || 0}</td>
+        <td data-col="location">${part.Inventory_Location || "N/A"}</td>
+      `;
+      hideRowColumns(row);
+      tbody.appendChild(row);
+    });
+  }
+
+  // --- Initial render ---
+  const mainKey = Object.keys(vehicleStocks).find(k => k.startsWith("01"));
+  let initialParts = rawParts.map(part => ({
+    ...part,
+    Stock_Quantity: mainKey && vehicleStocks[mainKey][part.Item_Code] != null
+      ? vehicleStocks[mainKey][part.Item_Code]
+      : 0,
+    Inventory_Location: part.Inventory_Location && /\d/.test(part.Inventory_Location)
+      ? part.Inventory_Location
+      : "N/A"
+  }));
+  initialParts = sortByLocation(initialParts);
+  renderRows(initialParts);
+
+  // --- Filters ---
+  const categoryFilter = document.getElementById("categoryFilter");
+  const sizeFilter = document.getElementById("sizeFilter");
+  const fittingFilter = document.getElementById("fittingFilter");
+  const textFilter = document.getElementById("textFilter");
+  const strictToggle = document.getElementById("specificSearchToggle");
+  const clearBtn = document.querySelector(".button-59");
+
+  function normalize(str) {
+    return (str || "").toLowerCase().replace(/\s+/g, "").replace(/[-_]/g, "");
+  }
+
+  // ✅ Robust strict-state reader
+  function getStrictState() {
+    const el = strictToggle;
+    if (!el) return false;
+
+    let raw = false;
+
+    if (typeof el.checked === "boolean") raw = !!el.checked;
+    else {
+      const forId = el.getAttribute?.("for");
+      if (forId) {
+        const input = document.getElementById(forId);
+        if (input && typeof input.checked === "boolean") raw = !!input.checked;
+      }
+      const aria = el.getAttribute?.("aria-checked") ?? el.getAttribute?.("aria-pressed");
+      if (aria != null) raw = aria === "true";
+      const ds = el.getAttribute?.("data-state");
+      if (ds) raw = (ds === "checked" || ds === "on" || ds === "true");
+      const cls = el.classList || { contains: () => false };
+      if (cls.contains("on") || cls.contains("active") || cls.contains("is-active")) raw = true;
+    }
+
+    // ✅ invert it so ON → strict
+    return !raw;
+  }
+
+  // ✅ Force strict OFF (used by Clear)
+  function setStrictOff() {
+    const el = strictToggle;
+    if (!el) return;
+    try {
+      if (typeof el.checked === "boolean") { el.checked = false; el.dispatchEvent(new Event("change", { bubbles: true })); return; }
+      const forId = el.getAttribute?.("for");
+      if (forId) {
+        const input = document.getElementById(forId);
+        if (input && typeof input.checked === "boolean") { input.checked = false; input.dispatchEvent(new Event("change", { bubbles: true })); return; }
+      }
+      if (el.hasAttribute?.("aria-checked")) el.setAttribute("aria-checked", "false");
+      if (el.hasAttribute?.("aria-pressed")) el.setAttribute("aria-pressed", "false");
+      if (el.getAttribute?.("data-state")) el.setAttribute("data-state", "unchecked");
+      el.classList?.remove("on","active","is-active");
+      el.dispatchEvent?.(new Event("change", { bubbles: true }));
+    } catch (_) {}
+  }
+
+  function filterTable() {
+    const category = (categoryFilter.value || "").toLowerCase();
+    const size = (sizeFilter.value || "").toLowerCase();
+    const fitting = (fittingFilter.value || "").toLowerCase();
+    const search = (textFilter.value || "").toLowerCase();
+    const strict = getStrictState();
+
+    Array.from(tbody.rows).forEach(row => {
+      const cells = row.getElementsByTagName("td");
+      const itemNumber = (cells[0].textContent || "").toLowerCase();
+      const description = (cells[1].textContent || "").toLowerCase();
+      const categoryText = (cells[2].textContent || "").toLowerCase();
+      const cost = (cells[3].textContent || "").toLowerCase();
+
+      let matchesCategory, matchesSize, matchesFitting, matchesSearch;
+
+      if (strict) {
+        matchesCategory = !category || normalize(categoryText).includes(normalize(category));
+        matchesSize     = !size     || normalize(description).includes(normalize(size));
+        matchesFitting  = !fitting  || normalize(description).includes(normalize(fitting));
+        const zitem = normalize(itemNumber), zdesc = normalize(description), zcat = normalize(categoryText), zcost = normalize(cost), zq = normalize(search);
+        matchesSearch   = !search || zitem.includes(zq) || zdesc.includes(zq) || zcat.includes(zq) || zcost.includes(zq);
+      } else {
+        matchesCategory = !category || categoryText.includes(category);
+        matchesSize     = !size     || description.includes(size);
+        matchesFitting  = !fitting  || description.includes(fitting);
+        matchesSearch   = !search   || itemNumber.includes(search) || description.includes(search) || categoryText.includes(search) || cost.includes(search);
+      }
+
+      row.style.display = (matchesCategory && matchesSize && matchesFitting && matchesSearch) ? "" : "none";
+    });
+  }
+
+  // Triggers
+  categoryFilter.addEventListener("change", filterTable);
+  sizeFilter.addEventListener("change", filterTable);
+  fittingFilter.addEventListener("change", filterTable);
+  textFilter.addEventListener("input", filterTable);
+  if (strictToggle) {
+    ["change","click","input"].forEach(ev => strictToggle.addEventListener(ev, filterTable));
+  }
+
+  // --- Warehouse selection ---
+  const warehouseSelect = document.getElementById("warehouseSelect");
+  warehouseSelect.addEventListener("change", function () {
+    const selectedValue = warehouseSelect.value;
+    const jsonKey = Object.keys(vehicleStocks).find(k => k.startsWith(selectedValue));
+    let filteredParts = [];
+
+    if (selectedValue === "01") {
+      if (locHeader) locHeader.textContent = "Stock Location";
+      filteredParts = rawParts.map(part => {
+        const qty = jsonKey && vehicleStocks[jsonKey][part.Item_Code] != null ? vehicleStocks[jsonKey][part.Item_Code] : 0;
+        return {
+          ...part,
+          Stock_Quantity: qty,
+          Inventory_Location: part.Inventory_Location && /\d/.test(part.Inventory_Location) ? part.Inventory_Location : "N/A"
+        };
+      });
+      filteredParts = sortByLocation(filteredParts);
+    } else if (jsonKey) {
+      if (locHeader) locHeader.textContent = "Vehicle Owner";
+      const partsObj = vehicleStocks[jsonKey];
+      filteredParts = Object.keys(partsObj).map(itemCode => {
+        const rawPart = rawParts.find(p => p.Item_Code === itemCode) || {};
+        return { ...rawPart, Item_Code: itemCode, Stock_Quantity: partsObj[itemCode], Inventory_Location: jsonKey };
+      });
+    }
+
+    renderRows(filteredParts);
+    filterTable();
+  });
+
+  // --- Clear filters ---
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      categoryFilter.selectedIndex = 0;
+      sizeFilter.selectedIndex = 0;
+      fittingFilter.selectedIndex = 0;
+      textFilter.value = "";
+      setStrictOff();
+      filterTable();
+
+      const originalText = clearBtn.textContent;
+      clearBtn.textContent = "Cleared!";
+      clearBtn.blur();
+      setTimeout(() => { clearBtn.textContent = originalText; }, 1500);
+    });
+  }
+});
+</script>
+
+
+
+
+
+{% endblock %}

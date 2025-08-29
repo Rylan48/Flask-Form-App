@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Info For Returning Tools</title>
+{% endblock %}
+
+{% block body %}
+
+    <form id="load" class="form" action="{{ url_for('tool_bp.tool_update') }}" method="POST">
+        <h1>Return Page</h1>
+
+        <input type="hidden" name="action" value="return">
+
+        <div class="question">
+            <input type="text" id="tnumber" name="tnumber" required>
+            <label for="tnumber">Tool Number</label>
+        </div>
+
+        <button style="border: 3px solid black; margin-top: 20px;" class="btn-9" type="submit"><span>Submit</span></button>
+        <p style="margin-top: 0; margin-bottom: 10px; color: black;">May Take a While to Load</p>
+        <p id="loading-text" style="display:none; font-weight:bold; color: black;">Loading…</p>
+    </form>
+<script>
+document.getElementById("load").addEventListener("submit", function () {
+    document.body.style.cursor = "wait";
+    document.getElementById("loading-text").style.display = "block";
+});
+</script>
+{% endblock %}

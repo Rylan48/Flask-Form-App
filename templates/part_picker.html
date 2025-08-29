@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Part Picker</title>
+{% endblock %}
+
+{% block body %}
+<div class="full-center">
+<header><h1>Part Picker</h1></header>
+
+<a href="{{ url_for('part_picker_bp.part_request_form') }}"><button class="btn-9" type="button"><span>Part Request</span></button></a>
+<a href="{{ url_for('part_picker_bp.part_return_form') }}"><button class="btn-9" type="button"><span>Part Return</span></button></a>
+</div>
+{% endblock %}

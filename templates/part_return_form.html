@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Part Return Form</title>
+{% endblock %}
+
+{% block body %}
+
+<form id="load" class="form" action="{{ url_for('part_picker_bp.part_return') }}" method="POST">
+    <h1>Return Form</h1>
+
+    <div class="question">
+    <input type="text" id="name" name="name" value="{{ user_info.name or '' }}" required>
+        <label for="name">Name</label>
+    </div>
+
+    <div class="question static-label">
+    <input type="date" id="date" name="date" value="{{ user_info.date or '' }}" required>
+        <label for="date">Date of Return</label>
+    <script>
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        document.getElementById("date").value = formattedDate;
+    </script>
+    </div>
+
+    <div class="question">
+    <input type="text" id="jnumber" name="jnumber" value="{{ user_info.jnumber or '' }}" required>
+        <label for="jnumber">From Job/Vehicle</label>
+    </div>
+
+    <div class="question">
+    <input type="text" id="from_number" name="from_number" value="{{ user_info.from_number or 'Stock' }}" required>
+        <label for="from_number">To Warehouse/Vehicle</label>
+    </div>
+
+    <div class="question">
+    <input type="text" id="comments" name="comments" value="{{ user_info.comments or '' }}">
+        <label for="comments">Comments</label>
+    </div>
+
+    <button style="border: 3px solid black; margin-top: 20px;" class="btn-9" type="submit"><span>Submit</span></button>
+    <p style="margin-top: 0; margin-bottom: 10px; color: black;">May Take a While to Load</p>
+    <p id="loading-text" style="display:none; font-weight:bold; color: black;">Loading…</p>
+</form>
+
+<script>
+document.getElementById("load").addEventListener("submit", function () {
+    document.body.style.cursor = "wait";
+    document.getElementById("loading-text").style.display = "block";
+});
+</script>
+<script>
+  document.querySelectorAll('form .question input[type="text"]').forEach(input => {
+    // Check on page load
+    if (input.value.trim() !== '') {
+      input.classList.add('has-content');
+    }
+
+    // Check on input change
+    input.addEventListener('input', () => {
+      if (input.value.trim() !== '') {
+        input.classList.add('has-content');
+      } else {
+        input.classList.remove('has-content');
+      }
+    });
+  });
+</script>
+{% endblock %}

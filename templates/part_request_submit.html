@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Review Form</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Review Your Selection</h1></header>
+<h2>{{ action }} Form</h2>
+
+<div id="container" class="flex-container">
+  <div id="first2">
+    <h2>User Info</h2>
+    <ul>
+      <li><b>Name:</b> {{ user_info.name }}</li>
+      <li><b>Date:</b> {{ user_info.date }}</li>
+      <li><b>{{ direction_originate }}:</b> {{ user_info.from_number }}</li>
+      <li><b>{{ direction_goal }}:</b> {{ jnumber }}</li>
+      <li>{{ jnumber_check }}</li>
+      <li><b>Job Name:</b> {{ job_name }}</li>
+      <li><b>Needs to:</b> {{ need_to }}</li>
+      <li><b>Comments:</b> {{ user_info.comments }}</li>
+    </ul>
+  </div>
+  <div id="second2">
+    <h2>Selected Parts</h2>
+    <table class="table_fill table_top">
+      <thead>
+      <tr>
+        <th>Quantity</th>
+        <th>Part Number</th>
+        <th>Description</th>
+        <th>Cost</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.partNumber }}</td>
+        <td>{{ item.description }}</td>
+        <td>
+          {% if item.cost is not none %}
+          {{ item.cost }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="clear"></div>
+</div>
+
+
+
+<form action="{{ url_for('part_picker_bp.part_finish') }}" method="POST" onsubmit="disableSubmit()" style="border-top: 3px solid lightgray;">
+  <a href="{{ url1 }}"><button style="margin-top: 15px;" class="btn-9" type="button"><span>Back to Info</span></button></a>
+  <a href="{{ url2 }}"><button class="btn-9" type="button"><span>Back to Parts</span></button></a>
+  <button id="submit-btn" class="btn-9" type="submit"><span>Submit Form</span></button>
+</form>
+
+<script>
+  function disableSubmit() {
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+  }
+</script>
+<h3>Estimated Cost Total: ${{ total_cost }}</h3>
+
+{% endblock %}
+
+

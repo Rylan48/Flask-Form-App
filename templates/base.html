@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Forms App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <link rel="manifest" href="{{ url_for('static', filename='json/manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <link rel="apple-touch-icon" href="/static/images/NWFS color shield1.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <meta name="theme-color" content="#000000">
+
+    {% block head %} {% endblock %}
+</head>
+<body>
+<div class="topnav" id="myTopnav">
+    <a href="{{ url_for('home_bp.home') }}" class="active home-nav">Home</a>
+    <a href="{{ url_for('part_picker_bp.part_picker') }}">Part Picker</a>
+    <a href="{{ url_for('tool_bp.tool_log') }}" class="desktop-only">Tool Log</a>
+    <a href="{{ url_for('lists_bp.lists') }}" class="desktop-only">Lists</a>
+    <a href="{{ url_for('report_bp.report_error') }}">Report Error</a>
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <i class="fa fa-bars"></i>
+    </a>
+    <div id="NWFSlogo"><img src="{{ url_for('static', filename='images/NWFS color shield.png') }}" alt="NWFS Shield Logo"></div>
+</div>
+<div id="session-toast">
+  This session has expired after 30 minutes of inactivity. Returned to Homepage
+</div>
+
+
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/js/service-worker.js')
+      .then(() => console.log("Service Worker Registered"));
+  }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const forms = document.querySelectorAll("form");
+  forms.forEach(function (form) {
+    form.addEventListener("submit", function (e) {
+      const button = form.querySelector("button[type='submit']");
+      if (button) {
+        button.disabled = true;
+        button.innerText = "Submitting...";
+      }
+    });
+  });
+});
+</script>
+
+<script>
+  function refreshSession() {
+    fetch('/refresh-session')
+      .then(response => {
+        if (!response.ok) {
+          console.warn('Session expired or not authenticated');
+          // Optionally redirect to login or show a message here
+        } else {
+          console.log('Session refreshed');
+        }
+      })
+      .catch(err => console.error('Error refreshing session:', err));
+  }
+</script>
+<script>
+  (function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const access = urlParams.get("access");
+
+    if (access) {
+      // Save token to localStorage
+      localStorage.setItem("access_token", access);
+
+      // Remove access token from URL without reloading the page
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    } else {
+      const savedToken = localStorage.getItem("access_token");
+      if (savedToken) {
+        console.log("Token exists in localStorage, using it without reload");
+        // Optionally inject it into the app somehow if needed, without reload
+  }
+}
+  })();
+</script>
+<script>
+let timeout;
+
+// Start/reset inactivity timer
+function resetTimer() {
+  clearTimeout(timeout);
+
+  timeout = setTimeout(() => {
+    const isOnHome = window.location.pathname === "/";
+
+    if (!isOnHome) {
+      // Store timestamp so toast only shows immediately after redirect
+      sessionStorage.setItem("sessionExpiredRedirectedAt", Date.now().toString());
+      window.location.href = "/";
+    }
+    // If you're already on home, just silently let the session expire with no UI
+  }, 30 * 60 * 1000); // Slot 1 is minutes
+}
+
+// Listen for user activity to reset timer
+["mousemove", "keydown", "touchstart"].forEach(evt =>
+  document.addEventListener(evt, resetTimer)
+);
+
+resetTimer(); // Start on load
+
+// On page load: only show toast if session expired and we just got redirected to home
+window.addEventListener("DOMContentLoaded", () => {
+  const expiredAt = parseInt(sessionStorage.getItem("sessionExpiredRedirectedAt"), 10);
+  const now = Date.now();
+
+  if (
+    window.location.pathname === "/" &&
+    !isNaN(expiredAt) &&
+    now - expiredAt < 5000 // within 5 seconds of redirect
+  ) {
+    sessionStorage.removeItem("sessionExpiredRedirectedAt");
+    showToast();
+  } else {
+    // Clean up old flag
+    sessionStorage.removeItem("sessionExpiredRedirectedAt");
+  }
+});
+
+// Toast UI
+function showToast() {
+  const toast = document.getElementById("session-toast");
+  toast.style.display = "block";
+
+  setTimeout(closeToast, 300000); // Auto-dismiss after 5 min
+  document.addEventListener("click", closeToast);
+}
+
+function closeToast() {
+  const toast = document.getElementById("session-toast");
+  toast.style.display = "none";
+  document.removeEventListener("click", closeToast);
+}
+</script>
+<div class="layout-wrapper">
+{% block body %} {% endblock %}
+</div>
+</body>
+</html>

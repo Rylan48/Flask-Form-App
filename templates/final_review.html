@@ -1,0 +1,663 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Review Submission</title>
+{% endblock %}
+
+{% block body %}
+<div class="overlay-wrapper">
+  <div class="status-banner {{ submission.status }}">
+    {% if submission.decision == 'pending' %}
+    <header><h1>Review Submission</h1></header>
+    {% endif %}
+    <h1>{{ message }}</h1>
+    {% if submission.need_to == 'grabbed' and submission.action != 'Return' %}
+    <h2>Parts Status: Grabbed</h2>
+    {% endif %}
+    {% if submission.need_to == 'stage' and submission.action != 'Return' %}
+    <h2>Parts Status: Not Grabbed, Stage Parts</h2>
+    {% endif %}
+    <h2>{{ submission.status }}</h2>
+  </div>
+
+  <div id="container" class="flex-container">
+    <div id="first2">
+      <h2>User Info</h2>
+      <div class="submission-details">
+        <p><strong>Name:</strong> {{ submission.name }}</p>
+        <p><strong>Submit Date:</strong> {{ submission.date }}</p>
+        <p><strong>{{ submission.direction_originate }}:</strong> {{ submission.from_number }}</p>
+        <p><strong>{{ submission.direction_goal }}:</strong> {{ submission.jnumber }}</p>
+        <p><strong>Job Name:</strong> {{ submission.job_name }}</p>
+        <p><strong>Comments:</strong> {{ submission.comments }}</p>
+        <br>
+        <h3 style="font-size: 27px;">Stats</h3>
+        <p><strong>Requisition Number:</strong> {{ submission.requisition_number }}</p>
+        <p><strong>Form Status:</strong> {{ submission.decision[0] | upper }}{{ submission.decision[1:] }}</p>
+        <p><strong>Form Type:</strong> {{ submission.action[0] | upper }}{{ submission.action[1:] }}</p>
+        {% if submission.action != 'Return' %}
+        <p><strong>Parts Status:</strong>
+          {% if submission.need_to is defined %}
+            {{ submission.need_to[0] | upper }}{{ submission.need_to[1:] }}
+          {% else %}
+            N/A
+          {% endif %}
+        </p>
+        {% endif %}
+        <p><strong>Estimated Total Cost:</strong> $<span id="totalCostDisplay">0.00</span></p>
+        <p><strong>API Message:</strong> {{ submission.message }}</p>
+      </div>
+    </div>
+
+    <div id="second2">
+      <h2>Selected Items, Click to Swap</h2>
+      <button type="button" id="addItemBtn" onclick="startAddItem()" class="btn-70" style="margin-bottom: 20px;">Add Item</button>
+      {% if submission.failed_items and submission.decision == 'error' %}
+        <h2>Failed Parts</h2>
+      {% endif %}
+      <table id="mainTable" class="table_fill table_top">
+        <thead>
+          <tr>
+            <th>Quantity</th>
+            <th>Part Number</th>
+            <th>Description</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% set display_items = submission["failed_items"] if submission["failed_items"] else submission["items"] %}
+
+          {% for item in display_items %}
+            <tr class="clickable-row"
+                data-index="{{ loop.index0 }}"
+                data-partnumber="{{ item.partNumber }}"
+                data-description="{{ item.description }}"
+                data-cost="{{ item.cost }}"
+                data-quantity="{{ item.quantity }}">
+              <td>{{ item.quantity }}</td>
+              <td style="color: {% if item.partNumber == 'Custom Part' %}red{% else %}inherit{% endif %};
+                         font-weight: {% if item.partNumber == 'Custom Part' %}bold{% else %}normal{% endif %};">
+                {{ item.partNumber }}
+              </td>
+              <td>{{ item.description }}</td>
+              <td>{% if item.cost is not none %}{{ item.cost }}{% else %}N/A{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <!-- Original Items Table, only if there are failed items -->
+      {% if submission.failed_items and submission.decision == 'error' %}
+      <h2 style="margin-top: 50px; padding-top: 20px; border-top: 3px solid lightgray;">Successful Parts List</h2>
+      <table class="table_fill table_top">
+        <thead>
+            <tr>
+                <th>Quantity</th>
+                <th>Part Number</th>
+                <th>Description</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in submission.get('all_successful_items', []) %}
+            <tr>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.partNumber }}</td>
+                <td>{{ item.description }}</td>
+                <td>${{ "%.2f"|format(item.cost|float) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% if submission.total_success_cost is defined %}
+    <p><strong>Total Cost of Successful Items:</strong> ${{ "%.2f"|format(submission.total_success_cost) }}</p>
+    {% else %}
+
+    {% endif %}
+    </div>
+  </div>
+
+  {% if submission.decision in ["approved", "denied"] %}
+    <div class="overlay"></div>
+  {% endif %}
+
+  <form style="margin-top: 40px;" method="POST" action="{{ url_for('part_picker_review_bp.submit_decision', submission_id=submission_id) }}" id="decision-form">
+    <input type="hidden" id="itemsJsonInput" name="items_json" value="" />
+    <input type="hidden" id="totalCostInput" name="total_cost" value="0" />
+    <input type="hidden" name="decision" id="decision-input">
+    <button type="button" class="btn-9 approve"><span>Approve</span></button>
+    <button type="button" class="btn-9 deny"><span>Deny</span></button>
+  </form>
+
+  <div id="modal-backdrop" class="hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-message">
+      <p id="modal-message">Are you sure?</p>
+      <button type="button" class="modal-button-yes"><span>Yes</span></button>
+      <button type="button" class="modal-button-cancel"><span>Cancel</span></button>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById('decision-form');
+        const itemsInput = document.getElementById('itemsJsonInput');
+        const decisionInput = document.getElementById('decision-input');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalMessage = document.getElementById('modal-message');
+        const yesButton = modalBackdrop.querySelector('.modal-button-yes');
+        const cancelButton = modalBackdrop.querySelector('.modal-button-cancel');
+
+        function openModal(message, onConfirm) {
+            modalMessage.textContent = message;
+
+            yesButton.onclick = null;
+            yesButton.onclick = () => {
+                try {
+                    onConfirm?.();
+                } catch (err) {
+                    console.error("Error in onConfirm:", err);
+                }
+                closeModal();
+            };
+
+            modalBackdrop.classList.remove('hidden');
+            modalBackdrop.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeModal() {
+            modalBackdrop.classList.add('hidden');
+            modalBackdrop.setAttribute('aria-hidden', 'true');
+        }
+
+        cancelButton.addEventListener('click', closeModal);
+
+        function submitDecision(decision) {
+            const tbody = document.querySelector("#mainTable tbody");
+            if (!tbody) return;
+
+            const isReturn = form.dataset.action === "Return"; // or use your submission.action variable
+
+            const items = Array.from(tbody.rows).map(row => {
+                let quantity = parseInt(row.dataset.quantity) || 0;
+                let cost = parseFloat(row.dataset.cost) || 0;
+
+                if (isReturn) {
+                    quantity = -Math.abs(quantity);
+                    cost = -Math.abs(cost);
+                }
+
+                return {
+                    partNumber: row.dataset.partnumber || "",
+                    quantity: quantity,
+                    description: row.dataset.description || "",
+                    cost: cost
+                };
+            });
+
+            document.getElementById('itemsJsonInput').value = JSON.stringify(items);
+            document.getElementById('decision-input').value = decision;
+            form.submit();
+        }
+
+        // Hook up approve/deny buttons
+        document.querySelectorAll('button.btn-9').forEach(btn => {
+            if (btn.textContent.toLowerCase().includes("approve")) {
+                btn.addEventListener('click', () => openModal('Approve this submission?', () => submitDecision('approved')));
+            } else if (btn.textContent.toLowerCase().includes("deny")) {
+                btn.addEventListener('click', () => openModal('Deny this submission?', () => submitDecision('denied')));
+            }
+        });
+    });
+
+  </script>
+
+  <div id="part-selector-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9998;"></div>
+  <div id="partModal" class="modal" style="display:none; position: fixed; top: 10%; left: 10%; width: 80%; height: 80%; background: white; border: 2px solid #333; overflow: auto; z-index: 9999;">
+    <h2 style="margin-top: 25px; margin-bottom: 5px; color: black;">Click to Swap</h2>
+    <span id="closePartSelector" class="close">&times;</span>
+    <button type="button" class="btn-70" style="display: block !important;" id="removeItemBtn">Remove Item</button>
+    <div class="filter-row">
+    <label for="categoryFilter" class="top-label" style="color: black;">Category:</label>
+    <select id="categoryFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="ASSY">Assemblies</option>
+      <option value="BFLO">Backflow</option>
+      <option value="BATT">Batteries</option>
+      <option value="BLK">Black Pipe/Fittings</option>
+      <option value="BRAC">Bracing</option>
+      <option value="BRS">Brass</option>
+      <option value="COPP">Copper</option>
+      <option value="PVC">Cpvc</option>
+      <option value="FDC">FDC Accessories</option>
+      <option value="FALA">Fire Alarm</option>
+      <option value="FEXT">Fire Extinguisher</option>
+      <option value="GALV">Galvanized</option>
+      <option value="GAUG">Gauges</option>
+      <option value="GRV">Grooved</option>
+      <option value="HANG">Hangers</option>
+      <option value="HARD">Hardware</option>
+      <option value="MECH">Mechanical</option>
+      <option value="PIPE">Pipe</option>
+      <option value="SRVC">Service</option>
+      <option value="HDS">Sprinkler Heads</option>
+      <option value="SWIT">Switches</option>
+      <option value="VLVS">Valves</option>
+      <option value="TRIM">Escutcheons & Trim</option>
+      <option value="MISC">Misc.</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="sizeFilter" class="top-label" style="color: black;">Size:</label>
+    <select id="sizeFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value='1/2"'>1/2"</option>
+      <option value='3/4"'>3/4"</option>
+      <option value='1"'>1"</option>
+      <option value='1-1/4"'>1-1/4"</option>
+      <option value='1-1/2"'>1-1/2"</option>
+      <option value='2"'>2"</option>
+      <option value='2-1/2"'>2-1/2"</option>
+      <option value='3"'>3"</option>
+      <option value='3-1/2"'>3-1/2"</option>
+      <option value='4"'>4"</option>
+      <option value='4-1/2"'>4-1/2"</option>
+      <option value='5"'>5"</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="fittingFilter" class="top-label" style="color: black;">Fittings:</label>
+    <select id="fittingFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="NIPPLE">Nipples</option>
+      <option value="90">Elbows 90°</option>
+      <option value="45">Elbows 45°</option>
+      <option value="22.5">Elbows 22.5°</option>
+      <option value="TEE">Tees</option>
+      <option value="COUP">Couplings</option>
+      <option value="CAP">Caps</option>
+      <option value="PLUG">Plugs</option>
+      <option value="BUSH">Bushings</option>
+      <option value="UNION">Unions</option>
+      <option value="ADAPT">Adapters</option>
+      <option value="REDUCER">Reducers</option>
+      <option value="CROSS">Crosses</option>
+      <option value="FLANGE">Flanges</option>
+    </select>
+  </div>
+
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="specificSearchToggle">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" style="color: black;">Toggle Strict Search</span>
+    </div>
+
+    <script>
+    function getStrictState() {
+      return document.getElementById("specificSearchToggle").checked;
+    }
+
+    // Optional: keep `strict` updated live
+    document.getElementById("specificSearchToggle").addEventListener("change", function () {
+      console.log("Strict search is now:", getStrictState());
+    });
+    </script>
+
+    <button class="button-59">Clear Filters</button>
+
+    <input type="text" id="textFilter" placeholder="Search item..." style="margin: 10px; margin-top: 20px; padding: 5px; width: 230px; height: 35px;">
+
+    <table id="itemTable" class="table_fill">
+      <thead>
+        <tr>
+          <th>Item #</th>
+          <th>Item Description</th>
+          <th>Item Category</th>
+          <th>Standard Cost</th>
+          <th>Est. Quantity</th>
+          <th>Stock Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in item_table %}
+          <tr>
+            <td>{{ row["Item_Code"] }}</td>
+            <td>{{ row["Item_Description"] }}</td>
+            <td>{{ row["Item_Category"] }}</td>
+            <td>{{ row["Standard_Cost"] }}</td>
+            <td>{{ row["Stock_Quantity"] }}</td>
+            <td>{{ row["Inventory_Location"] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+  </div>
+    <div id="quantityModal" style="display: none;" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <p id="modalDescriptionText"></p>
+      <input style="height: 41px; width: 150px;" type="number" id="modalQuantityInput" placeholder="Enter quantity" min="1" />
+      <button id="confirmAddItem">Add Item</button>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toastMessage"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById('decision-form');
+  const submission = { action: {{ submission.action | tojson }} };
+  form.dataset.action = submission.action;
+
+  const itemTableBody = document.querySelector("#itemTable tbody");
+  const mainTableBody = document.querySelector("#mainTable tbody");
+  const removeBtn = document.getElementById("removeItemBtn");
+  const partModal = document.getElementById("partModal");
+  const partBackdrop = document.getElementById("part-selector-backdrop");
+  const quantityModal = document.getElementById("quantityModal");
+  const modalDescriptionText = document.getElementById("modalDescriptionText");
+  const modalQuantityInput = document.getElementById("modalQuantityInput");
+  const confirmAddItemBtn = document.getElementById("confirmAddItem");
+  const closeQuantityModal = document.getElementById("closeModal");
+
+  const categoryFilter = document.getElementById("categoryFilter");
+  const sizeFilter = document.getElementById("sizeFilter");
+  const fittingFilter = document.getElementById("fittingFilter");
+  const textFilter = document.getElementById("textFilter");
+  const addItemBtn = document.getElementById("addItemBtn");
+
+  // ✅ New
+  const strictToggle = document.getElementById("specificSearchToggle");
+  const clearBtn = document.querySelector(".button-59");
+
+  let selectedRow = null;
+  let isAddMode = false;
+  let selectedItem = null;
+
+  function showToast(message, duration = 3000) {
+      const toast = document.getElementById("toastMessage");
+      toast.textContent = message;
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", duration);
+  }
+  window.showToast = showToast;
+
+  function displayValue(value) {
+      return form.dataset.action === "Return" ? -Math.abs(value) : value;
+  }
+
+  function updateTotalCost() {
+      let total = 0;
+      for (const row of mainTableBody.rows) {
+          const cost = parseFloat(row.dataset.cost);
+          const qty = parseInt(row.dataset.quantity);
+          if (!isNaN(cost) && !isNaN(qty)) total += cost * qty;
+
+          row.cells[0].textContent = displayValue(qty);
+          row.cells[3].textContent = displayValue(cost);
+      }
+      total = form.dataset.action === "Return" ? -Math.abs(total) : total;
+      total = total.toFixed(2);
+      document.getElementById('totalCostDisplay').textContent = total;
+      document.getElementById('totalCostInput').value = total;
+  }
+
+  function isDuplicatePartNumber(partNumber, excludeRow = null) {
+      return Array.from(mainTableBody.rows).some(row =>
+          row !== excludeRow && row.dataset.partnumber === partNumber
+      );
+  }
+
+  function updateMainTableRow(row, item) {
+      let cost = parseFloat(item.cost) || 0;
+      if (form.dataset.action === "Return") cost = -Math.abs(cost);
+
+      row.dataset.partnumber = item.partNumber;
+      row.dataset.description = item.description;
+      row.dataset.cost = cost;
+
+      row.cells[1].textContent = item.partNumber;
+      row.cells[2].textContent = item.description;
+      row.cells[3].textContent = displayValue(cost);
+
+      updateTotalCost();
+  }
+
+  function addNewItemToMainTable(item, quantity) {
+      const newRow = document.createElement("tr");
+      newRow.classList.add("clickable-row");
+      newRow.dataset.partnumber = item.partNumber;
+      newRow.dataset.description = item.description;
+      newRow.dataset.cost = item.cost;
+      newRow.dataset.quantity = quantity;
+
+      newRow.innerHTML = `
+          <td>${displayValue(quantity)}</td>
+          <td>${item.partNumber}</td>
+          <td>${item.description}</td>
+          <td>${displayValue(item.cost)}</td>
+      `;
+
+      newRow.addEventListener("click", () => {
+          selectedRow = newRow;
+          isAddMode = false;
+          showItemSelectModal();
+      });
+
+      mainTableBody.appendChild(newRow);
+      updateTotalCost();
+  }
+
+  addItemBtn.addEventListener("click", () => {
+      isAddMode = true;
+      selectedRow = null;
+      showItemSelectModal();
+  });
+
+  confirmAddItemBtn.addEventListener("click", () => {
+      const qty = parseInt(modalQuantityInput.value);
+      if (!qty || qty < 1) { showToast("Please enter a valid quantity."); return; }
+      if (Array.from(mainTableBody.rows).some(r => r.dataset.partnumber === selectedItem.partNumber)) {
+          showToast("This item is already added."); return;
+      }
+      addNewItemToMainTable(selectedItem, qty);
+      quantityModal.style.display = "none";
+      closeItemSelectModal();
+  });
+
+  closeQuantityModal.onclick = () => quantityModal.style.display = "none";
+
+  removeBtn.addEventListener("click", () => {
+      if (selectedRow) {
+          selectedRow.remove();
+          selectedRow = null;
+          closeItemSelectModal();
+          updateTotalCost();
+      }
+  });
+
+  function showItemSelectModal() {
+      partModal.style.display = "block";
+      partBackdrop.style.display = "block";
+      if (removeBtn) removeBtn.style.display = isAddMode ? "none" : "flex";
+  }
+
+  function closeItemSelectModal() {
+      partModal.style.display = "none";
+      partBackdrop.style.display = "none";
+  }
+
+  // --- wire up closing for part selector ---
+  const closePartSelectorBtn = document.getElementById("closePartSelector");
+  if (closePartSelectorBtn) {
+    closePartSelectorBtn.addEventListener("click", () => {
+      partModal.style.display = "none";
+      partBackdrop.style.display = "none";
+      selectedRow = null;
+    });
+  }
+  if (partBackdrop) {
+    partBackdrop.addEventListener("click", (e) => {
+      if (e.target === partBackdrop) {
+        partModal.style.display = "none";
+        partBackdrop.style.display = "none";
+        selectedRow = null;
+      }
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && partModal.style.display === "block") {
+      partModal.style.display = "none";
+      partBackdrop.style.display = "none";
+      selectedRow = null;
+    }
+  });
+
+  itemTableBody.addEventListener("click", (event) => {
+      const itemRow = event.target.closest("tr");
+      if (!itemRow) return;
+      const cells = itemRow.querySelectorAll("td");
+      const partNumber = cells[0]?.textContent.trim();
+      const description = cells[1]?.textContent.trim();
+      const cost = parseFloat(cells[3]?.textContent.trim() || 0);
+      const item = { partNumber, description, cost };
+
+      if (isAddMode) {
+          selectedItem = item;
+          closeItemSelectModal();
+          modalDescriptionText.textContent = `Quantity for: ${item.description}`;
+          modalQuantityInput.value = "";
+          quantityModal.style.display = "flex";
+          setTimeout(() => modalQuantityInput.focus(), 100);
+      } else if (selectedRow) {
+          if (isDuplicatePartNumber(partNumber, selectedRow)) {
+              showToast("This item is already added."); return;
+          }
+          updateMainTableRow(selectedRow, item);
+          closeItemSelectModal();
+          selectedRow = null;
+      }
+  });
+
+  mainTableBody.addEventListener("click", (e) => {
+      const row = e.target.closest(".clickable-row");
+      if (!row) return;
+      selectedRow = row;
+      isAddMode = false;
+      showItemSelectModal();
+  });
+
+  // --- FILTERS ---
+  function normalize(str) {
+    return (str || "").toLowerCase().replace(/\s+/g, "").replace(/[-_]/g, "");
+  }
+
+  function getStrictState() {
+    const el = strictToggle;
+    if (!el) return false;
+
+    let raw = false;
+
+    if (typeof el.checked === "boolean") raw = !!el.checked;
+    else {
+      const forId = el.getAttribute?.("for");
+      if (forId) {
+        const input = document.getElementById(forId);
+        if (input && typeof input.checked === "boolean") raw = !!input.checked;
+      }
+      const aria = el.getAttribute?.("aria-checked") ?? el.getAttribute?.("aria-pressed");
+      if (aria != null) raw = aria === "true";
+      const ds = el.getAttribute?.("data-state");
+      if (ds) raw = (ds === "checked" || ds === "on" || ds === "true");
+      const cls = el.classList || { contains: () => false };
+      if (cls.contains("on") || cls.contains("active") || cls.contains("is-active")) raw = true;
+    }
+
+    // flip here so that ON = strict
+    return !raw;
+  }
+
+  function setStrictOff() {
+    const el = strictToggle;
+    if (!el) return;
+    try {
+      if (typeof el.checked === "boolean") { el.checked = false; el.dispatchEvent(new Event("change", { bubbles: true })); return; }
+      const forId = el.getAttribute?.("for");
+      if (forId) {
+        const input = document.getElementById(forId);
+        if (input && typeof input.checked === "boolean") { input.checked = false; input.dispatchEvent(new Event("change", { bubbles: true })); return; }
+      }
+      if (el.hasAttribute?.("aria-checked")) el.setAttribute("aria-checked","false");
+      if (el.hasAttribute?.("aria-pressed")) el.setAttribute("aria-pressed","false");
+      if (el.getAttribute?.("data-state")) el.setAttribute("data-state","unchecked");
+      el.classList?.remove("on","active","is-active");
+      el.dispatchEvent?.(new Event("change", { bubbles: true }));
+    } catch (_) {}
+  }
+
+  function filterTable() {
+      const catVal = (categoryFilter.value || "").toLowerCase();
+      const sizeVal = (sizeFilter.value || "").toLowerCase();
+      const fittingVal = (fittingFilter.value || "").toLowerCase();
+      const textVal = (textFilter.value || "").toLowerCase();
+      const strict = getStrictState();
+
+      itemTableBody.querySelectorAll("tr").forEach(row => {
+          const cells = row.querySelectorAll("td");
+          const category = cells[2]?.textContent.toLowerCase() || "";
+          const description = cells[1]?.textContent.toLowerCase() || "";
+          const rowText = row.textContent.toLowerCase();
+
+          let matchCat, matchSize, matchFit, matchText;
+
+          if (strict) {
+              matchCat = !catVal     || normalize(category).includes(normalize(catVal));
+              matchSize = !sizeVal   || normalize(description).includes(normalize(sizeVal));
+              matchFit = !fittingVal || normalize(description).includes(normalize(fittingVal));
+              matchText = !textVal   || normalize(rowText).includes(normalize(textVal));
+          } else {
+              matchCat = !catVal     || category.includes(catVal);
+              matchSize = !sizeVal   || description.includes(sizeVal);
+              matchFit = !fittingVal || description.includes(fittingVal);
+              matchText = !textVal   || rowText.includes(textVal);
+          }
+
+          row.style.display = (matchCat && matchSize && matchFit && matchText) ? "" : "none";
+      });
+  }
+
+  categoryFilter.addEventListener("change", filterTable);
+  sizeFilter.addEventListener("change", filterTable);
+  fittingFilter.addEventListener("change", filterTable);
+  textFilter.addEventListener("input", filterTable);
+  if (strictToggle) {
+    ["change","click","input"].forEach(ev => strictToggle.addEventListener(ev, filterTable));
+  }
+
+  // ✅ Clear filters
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      categoryFilter.selectedIndex = 0;
+      sizeFilter.selectedIndex = 0;
+      fittingFilter.selectedIndex = 0;
+      textFilter.value = "";
+      setStrictOff();
+      filterTable();
+
+      const originalText = clearBtn.textContent;
+      clearBtn.textContent = "Cleared!";
+      clearBtn.blur();
+      setTimeout(() => { clearBtn.textContent = originalText; }, 1500);
+    });
+  }
+
+  // ✅ Run total cost calculation once on page load
+  updateTotalCost();
+});
+</script>
+
+</div>
+{% endblock %}

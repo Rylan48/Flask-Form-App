@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Submit Error Report</title>
+{% endblock %}
+
+{% block body %}
+<div class="full-center">
+<header><h1>Thank You for Reporting This Error</h1></header>
+
+
+<a href="{{ url_for('home_bp.home') }}"><button class="btn-9" type="button"><span>Finish</span></button></a>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home Page</title>
+{% endblock %}
+
+{% block body %}
+<div class="full-center">
+<header><h1>NWFS Form Home Page</h1></header>
+
+    <a href="{{ url_for('part_picker_bp.part_picker') }}"><button class="btn-9" type="button"><span>Part Picker</span></button></a>
+    <a href="{{ url_for('tool_bp.tool_choice') }}"><button class="btn-9" type="button"><span>Tool Log</span></button></a>
+    <a href="{{ url_for('lists_bp.lists') }}" style="text-decoration: none;"><button style="display: block; margin: auto;" class="btn-9" type="button"><span>Lists</span></button></a>
+
+</div>
+{% endblock %}

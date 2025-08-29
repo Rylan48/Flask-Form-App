@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Info For Requesting Tools</title>
+{% endblock %}
+
+{% block body %}
+
+    <form id="load" class="form" action="{{ url_for('tool_bp.tool_update') }}" method="POST">
+        <h1>Request Page</h1>
+
+        <input type="hidden" name="action" value="request">
+
+        <div class="question">
+            <input type="text" id="tnumber" name="tnumber" required>
+            <label for="tnumber">Tool Number</label>
+        </div>
+
+        <div class="question">
+            <input type="text" id="name" name="name" required>
+            <label for="name">Name</label>
+        </div>
+
+        <div class="question static-label">
+            <input type="date" id="date" name="date" required>
+            <label for="date">Date of Request</label>
+
+        <script>
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            document.getElementById("date").value = formattedDate;
+        </script>
+        </div>
+
+        <div class="question">
+            <input type="text" id="jnumber" name="jnumber">
+            <label for="jnumber">Job Number/Comments</label>
+        </div>
+
+        <button style="border: 3px solid black; margin-top: 20px;" class="btn-9" type="submit"><span>Submit</span></button>
+        <p style="margin-top: 0; margin-bottom: 10px; color: black;">May Take a While to Load</p>
+        <p id="loading-text" style="display:none; font-weight:bold; color: black;">Loading…</p>
+    </form>
+<script>
+document.getElementById("load").addEventListener("submit", function () {
+    document.body.style.cursor = "wait";
+    document.getElementById("loading-text").style.display = "block";
+});
+</script>
+<script>
+  document.querySelectorAll('form .question input[type="text"]').forEach(input => {
+    // Check on page load
+    if (input.value.trim() !== '') {
+      input.classList.add('has-content');
+    }
+
+    // Check on input change
+    input.addEventListener('input', () => {
+      if (input.value.trim() !== '') {
+        input.classList.add('has-content');
+      } else {
+        input.classList.remove('has-content');
+      }
+    });
+  });
+</script>
+{% endblock %}

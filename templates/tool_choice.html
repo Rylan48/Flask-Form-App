@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Tool Choice</title>
+{% endblock %}
+
+{% block body %}
+<div class="full-center">
+  <header><h1>Tool Log</h1></header>
+
+  <a href="{{ url_for('tool_bp.show_request_form') }}"><button class="btn-9" type="button"><span>Make Tool Request</span></button></a>
+  <a href="{{ url_for('tool_bp.show_return_form') }}"><button class="btn-9" type="button"><span>Make Tool Return</span></button></a> <br>
+  <a href="{{ url_for('tool_bp.tool_log') }}"><button class="btn-9" type="button"><span>Check Tool Statuses</span></button></a>
+    </div>
+{% endblock %}

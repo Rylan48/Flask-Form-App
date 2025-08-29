@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Report Error</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>NWFS Form Home Page</h1></header>
+
+
+    <form class="form" action="{{ url_for('report_bp.report_submit') }}" method="POST">
+        <textarea style="height: 100px;" id="report" name="report" required></textarea><br>
+        <label style="color: red;" for="report">Please Write Any Info You Have About the Error You Encountered</label>
+        <button style="border: 3px solid black; margin-top: 20px;" class="btn-9" type="submit"><span>Submit</span></button>
+    </form>
+{% endblock %}

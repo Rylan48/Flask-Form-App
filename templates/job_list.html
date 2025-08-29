@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Job List</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Job List</h1></header>
+
+<h2 style="margin-bottom: 25px;">This Is Only For Viewing Active Jobs</h2>
+
+<button class="btn-70" id="JobUpdate" onclick="location.href='{{ url_for('lists_bp.job_update') }}'">Update All Jobs</button>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const updateBtn = document.getElementById("JobUpdate");
+
+  if (updateBtn) {
+    updateBtn.addEventListener("click", function () {
+      updateBtn.disabled = true;
+      updateBtn.innerText = "Updating...";
+    });
+  }
+});
+</script>
+<button class="btn-70" id="DatabaseUpdate" onclick="location.href='{{ url_for('lists_bp.database_update') }}'">Form Data to Egnyte</button>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const updateBtn = document.getElementById("DatabaseUpdate");
+
+  if (updateBtn) {
+    updateBtn.addEventListener("click", function () {
+      updateBtn.disabled = true;
+      updateBtn.innerText = "Updating...";
+    });
+  }
+});
+</script>
+
+<div class="filter-row">
+<label for="jobTypeFilter" class="top-label" style="font-size: 20px;">Job Type: </label>
+<select id="jobTypeFilter" style="width: 230px;">
+    <option value="all">All</option>
+    <option value="residential">Residential</option>
+    <option value="sprinkler">Sprinkler</option>
+    <option value="firealarm">Fire Alarm</option>
+    <option value="mixed">Mixed</option>
+    <option value="service">Service</option>
+    <option value="misc">Misc.</option>
+</select>
+</div>
+
+<div class="filter-row">
+  <label for="jobSearch" id="search-label" class="top-label" style="font-size: 20px;">Search: </label>
+  <input type="text" id="jobSearch" placeholder="Search Job..." style="margin: 10px; margin-top: 20px; padding: 5px; width: 230px; height: 35px;">
+</div>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Job Number</th>
+            <th>Job Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in active_jobs %}
+            <tr>
+                <td>{{ job.Job_Number }}</td>
+                <td>{{ job.Job_Name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const filterSelect = document.getElementById("jobTypeFilter");
+    const searchInput = document.getElementById("jobSearch");
+    const rows = document.querySelectorAll("tbody tr");
+
+    function updateTable() {
+        const selected = filterSelect.value;
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
+        rows.forEach(row => {
+            const jobNum = row.children[0].textContent.trim().toLowerCase();
+            const jobName = row.children[1].textContent.trim().toLowerCase();
+
+            const isService = /^\d{8}$/.test(jobNum);
+            const hasR = jobNum.includes("r");
+            const hasC = jobNum.includes("c");
+            const hasL = jobNum.includes("l");
+            const hasM = jobNum.includes("m");
+
+            let typeMatch = false;
+
+            switch (selected) {
+                case "all":
+                    typeMatch = true;
+                    break;
+                case "residential":
+                    typeMatch = hasR;
+                    break;
+                case "sprinkler":
+                    typeMatch = hasC;
+                    break;
+                case "firealarm":
+                    typeMatch = hasL;
+                    break;
+                case "mixed":
+                    typeMatch = hasM;
+                    break;
+                case "service":
+                    typeMatch = isService;
+                    break;
+                case "misc":
+                    typeMatch = !hasR && !hasC && !hasL && !hasM && !isService;
+                    break;
+            }
+
+            const textMatch = jobNum.includes(searchTerm) || jobName.includes(searchTerm);
+
+            row.style.display = (typeMatch && textMatch) ? "" : "none";
+        });
+    }
+
+    filterSelect.addEventListener("change", updateTable);
+    searchInput.addEventListener("input", updateTable);
+});
+</script>
+
+
+{% endblock %}

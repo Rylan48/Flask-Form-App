@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Part Request</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Part Request</h1></header>
+<div id="container" class="flex-container">
+  <div id="first">
+    <h2>My List</h2>
+    <h3>Tap to Remove</h3>
+    <table id="requestTable" class="table_fill table_top">
+      <thead>
+      <tr>
+        <th style="width: 30%">Quantity</th>
+        <th class="hidden-col">Item Number</th>
+        <th style="width: 69%">Item Description</th>
+        <th class="hidden-col">Cost</th>
+      </tr>
+      </thead>
+      <tbody>
+      <!-- JavaScript will add rows here -->
+      {% for item in items %}
+      <tr data-description="{{ item.description }}">
+        <td style="width: 30%">{{ item.quantity }}</td>
+        <td class="hidden-col">{{ item.partNumber }}</td>
+        <td style="width: 69%">{{ item.description }}</td>
+        <td class="hidden-col" data-cost="{{ item.cost }}">{{ item.cost }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <form id="requestForm" method="POST" action="{{ url_for('part_picker_bp.part_request_check') }}">
+      <input type="hidden" name="request_data" id="requestDataInput">
+      <button class="btn-9" id="button_small" type="submit"><span>Move to Submit Request</span></button>
+      <p id="loading-text" style="display:none; font-weight:bold;">Loading…</p>
+    </form>
+    <h3>Estimated Cost Total: $<span id="costTotal">0.00</span></h3>
+
+  </div>
+  <div id="second">
+    <h2 style="margin-bottom: 10px;">Parts List</h2>
+
+    <div id="customItemInput" style="margin-top: 10px;">
+      <h3>Add Custom Item</h3>
+      <input type="number" class="formInput" id="customQty" placeholder="Quantity" min="1">
+      <input type="text" class="formInput" id="customDesc" placeholder="Item Description">
+      <button type="button" class="btn-70" id="addCustomItem">Add</button>
+    </div>
+    <hr>
+
+    <h3 style="margin-top: 15px;">Filter List</h3>
+
+  <div class="filter-row">
+    <label for="categoryFilter" class="top-label">Category:</label>
+    <select id="categoryFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="ASSY">Assemblies</option>
+      <option value="BFLO">Backflow</option>
+      <option value="BATT">Batteries</option>
+      <option value="BLK">Black Pipe/Fittings</option>
+      <option value="BRAC">Bracing</option>
+      <option value="BRS">Brass</option>
+      <option value="COPP">Copper</option>
+      <option value="PVC">Cpvc</option>
+      <option value="FDC">FDC Accessories</option>
+      <option value="FALA">Fire Alarm</option>
+      <option value="FEXT">Fire Extinguisher</option>
+      <option value="GALV">Galvanized</option>
+      <option value="GAUG">Gauges</option>
+      <option value="GRV">Grooved</option>
+      <option value="HANG">Hangers</option>
+      <option value="HARD">Hardware</option>
+      <option value="MECH">Mechanical</option>
+      <option value="PIPE">Pipe</option>
+      <option value="SRVC">Service</option>
+      <option value="HDS">Sprinkler Heads</option>
+      <option value="SWIT">Switches</option>
+      <option value="VLVS">Valves</option>
+      <option value="TRIM">Escutcheons & Trim</option>
+      <option value="MISC">Misc.</option>
+    </select>
+  </div>
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="size1Filter" class="top-label">Size 1:</label>
+    <select id="size1Filter" style="width: 230px;">
+      <option value="">All</option>
+      <option value='1/4" '>1/4"</option>
+      <option value='1/2" '>1/2"</option>
+      <option value='3/4" '>3/4"</option>
+      <option value='1" '>1"</option>
+      <option value='1-1/4" '>1-1/4"</option>
+      <option value='1-1/2" '>1-1/2"</option>
+      <option value='2" '>2"</option>
+      <option value='2-1/2" '>2-1/2"</option>
+      <option value='3" '>3"</option>
+      <option value='3-1/2" '>3-1/2"</option>
+      <option value='4" '>4"</option>
+      <option value='4-1/2" '>4-1/2"</option>
+      <option value='5" '>5"</option>
+      <option value='5-1/2" '>5-1/2"</option>
+      <option value='6" '>6"</option>
+      <option value='6-1/2" '>6-1/2"</option>
+      <option value='7" '>7"</option>
+      <option value='8" '>8"</option>
+    </select>
+  </div>
+    <div class="filter-row" style="margin-top: 15px;">
+    <label for="size2Filter" class="top-label">Size 2:</label>
+    <select id="size2Filter" style="width: 230px;">
+      <option value="">N/A</option>
+      <option value='1/4" '>1/4"</option>
+      <option value='1/2" '>1/2"</option>
+      <option value='3/4" '>3/4"</option>
+      <option value='1" '>1"</option>
+      <option value='1-1/4" '>1-1/4"</option>
+      <option value='1-1/2" '>1-1/2"</option>
+      <option value='2" '>2"</option>
+      <option value='2-1/2" '>2-1/2"</option>
+      <option value='3" '>3"</option>
+      <option value='3-1/2" '>3-1/2"</option>
+      <option value='4" '>4"</option>
+      <option value='4-1/2" '>4-1/2"</option>
+      <option value='5" '>5"</option>
+      <option value='5-1/2" '>5-1/2"</option>
+      <option value='6" '>6"</option>
+      <option value='6-1/2" '>6-1/2"</option>
+      <option value='7" '>7"</option>
+      <option value='8" '>8"</option>
+    </select>
+  </div>
+    <div class="filter-row" style="margin-top: 15px;">
+    <label for="size3Filter" class="top-label">Size 3:</label>
+    <select id="size3Filter" style="width: 230px;">
+      <option value="">N/A</option>
+      <option value='1/4" '>1/4"</option>
+      <option value='1/2" '>1/2"</option>
+      <option value='3/4" '>3/4"</option>
+      <option value='1" '>1"</option>
+      <option value='1-1/4" '>1-1/4"</option>
+      <option value='1-1/2" '>1-1/2"</option>
+      <option value='2" '>2"</option>
+      <option value='2-1/2" '>2-1/2"</option>
+      <option value='3" '>3"</option>
+      <option value='3-1/2" '>3-1/2"</option>
+      <option value='4" '>4"</option>
+      <option value='4-1/2" '>4-1/2"</option>
+      <option value='5" '>5"</option>
+      <option value='5-1/2" '>5-1/2"</option>
+      <option value='6" '>6"</option>
+      <option value='6-1/2" '>6-1/2"</option>
+      <option value='7" '>7"</option>
+      <option value='8" '>8"</option>
+    </select>
+  </div>
+
+  <div class="filter-row" style="margin-top: 15px;">
+    <label for="fittingFilter" class="top-label">Fittings:</label>
+    <select id="fittingFilter" style="width: 230px;">
+      <option value="">All</option>
+      <option value="NIPPLE">Nipples</option>
+      <option value="90">Elbows 90°</option>
+      <option value="45">Elbows 45°</option>
+      <option value="22.5">Elbows 22.5°</option>
+      <option value="TEE">Tees</option>
+      <option value="COUP">Couplings</option>
+      <option value="CAP">Caps</option>
+      <option value="PLUG">Plugs</option>
+      <option value="BUSH">Bushings</option>
+      <option value="UNION">Unions</option>
+      <option value="ADAPT">Adapters</option>
+      <option value="REDUCER">Reducers</option>
+      <option value="CROSS">Crosses</option>
+      <option value="FLANGE">Flanges</option>
+    </select>
+  </div>
+
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="specificSearchToggle">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" style="color: #edf2f4;">Toggle Strict Search</span>
+    </div>
+
+
+    <button class="button-59">Clear Filters</button>
+
+    <input type="text" class="formInput" id="textFilter" placeholder="Search item..." style="margin: 10px; margin-top: 20px; padding: 5px; width: 230px; height: 35px;">
+
+
+    <h3 style="margin-top: 25px; margin-bottom: 5px">Click to Add</h3>
+
+    <table id="itemTable" class="table_fill">
+      <thead>
+      <tr>
+        <th>Item #</th>
+        <th>Item Description</th>
+        <th class="itm-cat">Item Ctgy</th>
+        <th class="hidden-col">Standard Cost</th>
+        <th class="hidden-col">Stock Quantity</th>
+        <th class="hidden-col">Stock Location</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for row in item_table %}
+          <tr>
+            <td>{{ row["Item_Code"] }}</td>
+            <td>{{ row["Item_Description"] }}</td>
+            <td>{{ row["Item_Category"] }}</td>
+            <td>{{ row["Standard_Cost"] }}</td>
+            <td>{{ row["Stock_Quantity"] }}</td>
+            <td>{{ row["Inventory_Location"] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div id="clear"></div>
+</div>
+
+<div id="quantityModal" style="display: none;" class="modal">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <p id="modalDescriptionText"></p>
+    <input type="number" id="modalQuantityInput" placeholder="Enter quantity" min="1" />
+    <button id="confirmAddItem">Add Item</button>
+  </div>
+</div>
+
+<div id="removeModal" style="display: none;" class="modal">
+  <div class="modal-content">
+    <span id="closeModal2" class="close">&times;</span>
+    <p id="modalDescriptionText2"></p>
+    <button id="removeItem" class="removeBtn">Remove Item</button>
+    <button id="cancel" class="removeBtn">Cancel</button>
+  </div>
+</div>
+
+<div id="toastMessage" style=""></div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const table = document.getElementById("itemTable");
+  const headers = table.querySelectorAll("thead th");
+
+  let itmCatIndex = -1;
+
+  headers.forEach((th, index) => {
+    if (th.classList.contains("itm-cat")) {
+      itmCatIndex = index;
+    }
+  });
+
+  if (itmCatIndex !== -1) {
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      if (cells.length > itmCatIndex) {
+        cells[itmCatIndex].classList.add("itm-cat");
+      }
+    });
+  }
+});
+</script>
+<script>
+document.getElementById("requestForm").addEventListener("submit", function () {
+    document.body.style.cursor = "wait";
+    document.getElementById("loading-text").style.display = "block";
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toast = document.getElementById("toastMessage");
+  const requestForm = document.getElementById("requestForm");
+  const requestTableBody = document.querySelector("#requestTable tbody");
+  const itemTableBody = document.querySelector("#itemTable tbody");
+
+  const categoryFilter = document.getElementById("categoryFilter");
+  const size1Filter = document.getElementById("size1Filter");
+  const size2Filter = document.getElementById("size2Filter");
+  const size3Filter = document.getElementById("size3Filter");
+  const fittingFilter = document.getElementById("fittingFilter"); // NEW
+  const textFilter = document.getElementById("textFilter");
+
+  const modal = document.getElementById("quantityModal");
+  const modalInput = document.getElementById("modalQuantityInput");
+  const modalDescText = document.getElementById("modalDescriptionText");
+
+  const removeModal = document.getElementById("removeModal");
+  const removeModalText = document.getElementById("modalDescriptionText2");
+
+  let currentItemData = null;
+  let rowToRemove = null;
+
+  const table = document.getElementById("itemTable");
+
+  if (table) {
+    // Define the column indexes you want to hide (0-based)
+    const hiddenCols = [3, 4, 5]; // Example: hides 4th, 6th, and 8th columns
+
+    const ths = table.querySelectorAll("thead th");
+    hiddenCols.forEach(idx => {
+      if (ths.length > idx) {
+        ths[idx].style.display = "none";
+      }
+    });
+
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      hiddenCols.forEach(idx => {
+        if (cells.length > idx) {
+          cells[idx].style.display = "none";
+        }
+      });
+    });
+  }
+
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.style.display = "block";
+    setTimeout(() => (toast.style.display = "none"), duration);
+  }
+
+  function updateCostTotal() {
+    let total = 0;
+    document.querySelectorAll("#requestTable tbody tr").forEach(row => {
+      const qty = parseFloat(row.children[0].textContent);
+      const cost = parseFloat(row.children[3]?.dataset.cost || "0");
+      total += qty * cost;
+    });
+    document.getElementById("costTotal").textContent = total.toFixed(2);
+  }
+
+  // Helper: convert fraction or mixed fraction string to decimal
+  function fractionToDecimal(str) {
+    str = str.trim();
+    if (!str) return NaN;
+
+    // Mixed fraction: "2-1/2"
+    if (str.includes("-") && str.includes("/")) {
+      const [whole, frac] = str.split("-");
+      const [numer, denom] = frac.split("/");
+      return parseFloat(whole) + parseFloat(numer) / parseFloat(denom);
+    }
+
+    // Simple fraction: "1/2"
+    if (str.includes("/")) {
+      const [numer, denom] = str.split("/");
+      return parseFloat(numer) / parseFloat(denom);
+    }
+
+    // Whole number
+    return parseFloat(str);
+  }
+
+  // 🔹 Utility: normalize and fuzzy match
+  function normalize(str) {
+    return str.toLowerCase().replace(/\s+/g, "").replace(/[-_]/g, "");
+  }
+
+  function fuzzyMatch(needle, haystack) {
+    const n = normalize(needle);
+    const h = normalize(haystack);
+    if (!n) return true;
+
+    // Exact substring first
+    if (h.includes(n)) return true;
+
+    // Fuzzy fallback: allow 1-character typo
+    const regex = new RegExp(n.split("").join(".{0,1}"), "i");
+    return regex.test(h);
+  }
+
+  window.filterTable = function() {
+    const catVal = categoryFilter.value.toLowerCase();
+    const size1Val = size1Filter.value.toLowerCase();
+    const size2Val = size2Filter.value.toLowerCase();
+    const size3Val = size3Filter.value.toLowerCase();
+    const fittingVal = fittingFilter.value.toLowerCase();
+    const textVal = textFilter.value.toLowerCase();
+
+    // Keep original decimals calculation
+    const sizeDecimals = [size1Val, size2Val, size3Val]
+      .filter(Boolean)
+      .map(fractionToDecimal);
+
+    // ✅ Toggle check
+    const specific = document.getElementById("specificSearchToggle")?.checked;
+
+    itemTableBody.querySelectorAll("tr").forEach(row => {
+      const cells = row.querySelectorAll("td");
+      const category = cells[2]?.textContent.toLowerCase() || "";
+      const description = cells[1]?.textContent.toLowerCase() || "";
+      const rowText = row.textContent.toLowerCase();
+
+      // 🔹 Extract sizes from description
+      const sizeMatches =
+        description.match(/(\d+-\d+\/\d+|\d+\/\d+|\d+)(?=\s*")/g) || [];
+      const decimals = sizeMatches.map(fractionToDecimal);
+
+      let sizeMatch;
+      if (!sizeDecimals.length) {
+        sizeMatch = true;
+      } else if (specific) {
+        // ✅ Specific toggle: sizes must match in order exactly
+        const rowSizes = sizeMatches.map(s => s.trim());
+        sizeMatch =
+          sizeDecimals.length === rowSizes.length &&
+          sizeDecimals.every(
+            (sd, i) => fractionToDecimal(rowSizes[i]) === sd
+          );
+      } else {
+        // ✅ Default forgiving size match
+        sizeMatch = sizeDecimals.every(sd => decimals.includes(sd));
+      }
+
+      // 🔹 Text search behavior depends on toggle
+      let textMatch;
+      if (!textVal) {
+        textMatch = true;
+      } else if (specific) {
+        // ✅ Specific toggle → basic normalize search
+        textMatch = normalize(rowText).includes(normalize(textVal));
+      } else {
+        // ✅ Default → fuzzy match
+        textMatch = fuzzyMatch(textVal, rowText);
+      }
+
+      const match =
+        (!catVal || category.includes(catVal)) &&
+        sizeMatch &&
+        (!fittingVal || description.includes(fittingVal)) &&
+        textMatch;
+
+      row.style.display = match ? "" : "none";
+    });
+  };
+
+
+
+  function isDuplicate(description) {
+    return [...requestTableBody.querySelectorAll("tr")]
+      .some(r => r.dataset.description === description);
+  }
+
+  function createRequestRow({ quantity, partNumber, description, cost }) {
+    const newRow = document.createElement("tr");
+    newRow.dataset.description = description;
+    newRow.innerHTML = `
+      <td>${quantity}</td>
+      <td class="hidden-col">${partNumber}</td>
+      <td>${description}</td>
+      <td class="hidden-col" data-cost="${cost}">${isNaN(cost) ? "N/A (Custom)" : parseFloat(cost).toFixed(2)}</td>
+    `;
+    requestTableBody.appendChild(newRow);
+    updateCostTotal();
+  }
+
+  requestForm.addEventListener("submit", function (e) {
+    const rows = requestTableBody.querySelectorAll("tr");
+    if (rows.length === 0) {
+      e.preventDefault();
+      showToast("Please add at least one item before submitting.");
+      return;
+    }
+
+    const requestItems = [...rows].map(row => ({
+      quantity: row.children[0].textContent,
+      partNumber: row.children[1].textContent,
+      description: row.children[2].textContent,
+      cost: row.children[3].dataset.cost || "0"
+    }));
+
+    document.getElementById("requestDataInput").value = JSON.stringify(requestItems);
+  });
+
+  categoryFilter.addEventListener("change", filterTable);
+  [size1Filter, size2Filter, size3Filter].forEach(input => {
+    input.addEventListener("change", filterTable);
+  });
+  fittingFilter.addEventListener("change", filterTable); // NEW
+  textFilter.addEventListener("input", filterTable);
+
+  document.getElementById("addCustomItem").addEventListener("click", function () {
+    const quantity = document.getElementById("customQty").value.trim();
+    const description = document.getElementById("customDesc").value.trim();
+    const cost = 0;
+
+    if (!quantity || isNaN(quantity) || quantity <= 0) return showToast("Enter a valid quantity.");
+    if (!description) return showToast("Enter a description.");
+    if (isDuplicate(description)) return showToast("Item already added. Please remove it first to change quantity.");
+
+    createRequestRow({ quantity, partNumber: "", description, cost });
+
+    document.getElementById("customQty").value = "";
+    document.getElementById("customDesc").value = "";
+    document.getElementById("customCost").value = "";
+  });
+
+  itemTableBody.addEventListener("click", function (event) {
+    const row = event.target.closest("tr");
+    if (!row) return;
+
+    const cells = row.querySelectorAll("td");
+    currentItemData = {
+      partNumber: cells[0].textContent.trim(),
+      description: cells[1].textContent.trim(),
+      cost: parseFloat(cells[3].textContent.trim()) || 0
+    };
+
+    modalDescText.textContent = `Enter Quantity For: ${currentItemData.description}`;
+    modalInput.value = "";
+    modal.style.display = "flex";
+    modalInput.focus();
+  });
+
+  document.getElementById("closeModal").addEventListener("click", () => {
+    modal.style.display = "none";
+    currentItemData = null;
+  });
+
+  document.getElementById("confirmAddItem").addEventListener("click", function () {
+    const qty = modalInput.value.trim();
+    if (!qty || isNaN(qty) || qty <= 0) return showToast("Please enter a valid quantity.");
+    if (isDuplicate(currentItemData.description)) return showToast("Item already added. Please remove it first.");
+
+    createRequestRow({ quantity: qty, ...currentItemData });
+    modal.style.display = "none";
+    currentItemData = null;
+  });
+
+  requestTableBody.addEventListener("click", function (e) {
+    const clickedRow = e.target.closest("tr");
+    if (!clickedRow) return;
+    rowToRemove = clickedRow;
+    removeModalText.textContent = `Remove ${rowToRemove.dataset.description || "this item"}?`;
+    removeModal.style.display = "flex";
+  });
+
+  document.getElementById("closeModal2").addEventListener("click", closeRemoveModal);
+  document.getElementById("cancel").addEventListener("click", closeRemoveModal);
+
+  function closeRemoveModal() {
+    removeModal.style.display = "none";
+    rowToRemove = null;
+  }
+
+  document.getElementById("removeItem").addEventListener("click", function () {
+    if (rowToRemove) {
+      rowToRemove.remove();
+      updateCostTotal();
+    }
+    closeRemoveModal();
+  });
+
+  updateCostTotal();
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const clearBtn = document.querySelector(".button-59");
+  const specificToggle = document.getElementById("specificSearchToggle");
+
+  clearBtn.addEventListener("click", () => {
+    // Reset all select filters
+    document.querySelectorAll(".filter-row select").forEach(select => {
+      select.selectedIndex = 0;
+    });
+
+    // Reset text filter
+    const textInput = document.getElementById("textFilter");
+    if (textInput) textInput.value = "";
+
+    // Uncheck the specific search toggle
+    if (specificToggle) specificToggle.checked = false;
+
+    // Refresh table if filterTable exists
+    try {
+      filterTable();
+    } catch (e) {
+      console.warn("filterTable function not found:", e);
+    }
+
+    // Update button text
+    const originalText = clearBtn.textContent;
+    clearBtn.textContent = "Cleared!";
+
+    // Remove focus so it doesn't stay blue
+    clearBtn.blur();
+
+    // Reset text after 1.5s
+    setTimeout(() => {
+      clearBtn.textContent = originalText;
+    }, 1500);
+  });
+});
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const specificToggle = document.getElementById("specificSearchToggle");
+    if (specificToggle) {
+        specificToggle.addEventListener("change", () => {
+            filterTable(); // Refresh table when toggle changes
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Database Update</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Update Complete</h1></header>
+
+<a href="{{ url_for('lists_bp.job_list') }}"><button class="btn-9" type="button"><span>Back</span></button></a>
+
+{% endblock %}

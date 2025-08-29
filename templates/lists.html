@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Lists</title>
+{% endblock %}
+
+{% block body %}
+<div class="full-center">
+<header><h1>Lists</h1></header>
+
+    <a href="{{ url_for('lists_bp.job_list') }}"><button class="btn-9" type="button"><span>Job List</span></button></a>
+    <a href="{{ url_for('lists_bp.part_list') }}"><button class="btn-9" type="button"><span>Part List</span></button></a>
+
+</div>
+{% endblock %}

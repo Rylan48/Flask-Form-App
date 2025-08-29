@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Tool Finish</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Thank You for Updating the Tool Log</h1></header>
+
+    <a href="{{ url_for('home_bp.home') }}"><button class="btn-9" type="button"><span>Finish</span></button></a>
+{% endblock %}

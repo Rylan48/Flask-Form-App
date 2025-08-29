@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Error Page</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Error {{ error_type }}</h1></header>
+<h2>{{ error }}</h2>
+
+{% if show_force_button %}
+<!-- Force checkout button -->
+<form method="POST" action="{{ url_for('tool_bp.tool_update') }}">
+    <input type="hidden" name="tnumber" value="{{ tnumber }}">
+    <input type="hidden" name="name" value="{{ name }}">
+    <input type="hidden" name="date" value="{{ date }}">
+    <input type="hidden" name="jnumber" value="{{ jnumber }}">
+    <input type="hidden" name="action" value="{{ action }}">
+    <input type="hidden" name="force" value="1"> <!-- flag to skip validation -->
+    <button type="submit" class="btn-9"><span>Confirm Request</span></button>
+</form>
+{% else %}
+<!-- Normal back button -->
+<a href="{{ url }}"><button class="btn-9" type="button"><span>Back</span></button></a>
+{% endif %}
+{% endblock %}

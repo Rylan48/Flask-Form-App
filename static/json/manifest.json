@@ -1,0 +1,16 @@
+{
+  "name": "Forms App",
+  "short_name": "App",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/static/images/NWFS color shield1.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Tool Log</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Tool Log</h1></header>
+
+<a href="{{ url_for('tool_bp.show_request_form') }}"><button class="btn-9" type="button"><span>Make Tool Request</span></button></a>
+<a href="{{ url_for('tool_bp.show_return_form') }}"><button class="btn-9" type="button"><span>Make Tool Return</span></button></a><br>
+
+<div style="margin-top: 5px;">
+<label for="toolSearch" style="font-size: 28px; vertical-align: middle; margin-right: 0px;">Search Tool: </label>
+<input style="width: 300px; height: 35px; margin-bottom: 5px;" type="text" id="toolSearch" placeholder="Enter Tool #" onkeyup="filterTable()">
+</div>
+
+<table id="toolTable" class="table_fill table_top" style="margin-top: 18px;">
+    <thead>
+    <tr>
+        <th class="tool-num">Number</th>
+        <th>Description</th>
+        <th class="hidden-col">Calibration Due Date</th>
+        <th class="tool-status">Status</th>
+        <th>Checked Out By</th>
+        <th class="hidden-col">Date Checked Out</th>
+        <th class="hidden-col-size-dependant">Job/Comments</th>
+    </tr>
+    </thead>
+
+    {% for tool in data_table %}
+    <tr>
+        <td>{{ tool.Number }}</td>
+        <td>{{ tool.Description }}</td>
+        <td class="hidden-col">{{ tool.CalibrationDueDate }}</td>
+        <td>{{ tool.Status }}</td>
+        {% if tool.CheckedOutBy %}
+            <td>
+                {{ tool.CheckedOutBy }} &nbsp;&nbsp;|&nbsp;&nbsp; {{ tool.DateCheckedOut }}
+            </td>
+        {% else %}
+            <td>{{ tool.CheckedOutBy or '' }}</td>
+        {% endif %}
+        <td class="hidden-col">{{ tool.DateCheckedOut }}</td>
+        <td class="hidden-col-size-dependant">{{ tool.JobCheckedOutTo }}</td>
+    </tr>
+
+{% endfor %}
+
+</table>
+
+<script>
+function filterTable() {
+    let input = document.getElementById("toolSearch");
+    let filter = input.value.toUpperCase();
+    let table = document.querySelector("table");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) { // start at 1 to skip the header
+        let td = tr[i].getElementsByTagName("td")[0]; // Tool # column
+        if (td) {
+            let txtValue = td.textContent || td.innerText;
+            tr[i].style.display = txtValue.toUpperCase().includes(filter) ? "" : "none";
+        }
+    }
+}
+</script>
+<script>
+function addClassToColumnCells(table, className) {
+  const headers = table.querySelectorAll("thead th");
+  let columnIndex = -1;
+
+  // Find column index for this class
+  headers.forEach((th, index) => {
+    if (th.classList.contains(className)) {
+      columnIndex = index;
+    }
+  });
+
+  // Apply class to all body cells in that column
+  if (columnIndex !== -1) {
+    const rows = table.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
+      if (cells.length > columnIndex) {
+        cells[columnIndex].classList.add(className);
+      }
+    });
+  }
+}
+
+// Run for both tool-status and tool-num
+const table = document.querySelector("table"); // change selector if needed
+addClassToColumnCells(table, "tool-status");
+addClassToColumnCells(table, "tool-num");
+</script>
+{% endblock %}

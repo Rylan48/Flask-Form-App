@@ -1,0 +1,1284 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    max-width: 100%;
+
+}
+strong {
+    font-weight: bold;
+}
+.layout-wrapper {
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
+}
+body {
+    background-color: #335c67;
+    min-height: 100vh;
+    overflow: auto;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    width: 400px;
+    height: 80px;
+    font-size: 30px;
+    color: black;
+    background-color: #e8e8e8;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+@media (max-width: 768px) {
+button {
+    width: 300px;
+}}
+button:hover {
+    cursor: pointer;
+    background-color: darkgray;
+    color: white;
+}
+.submit_btn {
+    padding: 10px;
+    margin: 5px;
+    width: 300px;
+    height: 55px;
+    font-size: 22px;
+    color: black;
+    background-color: #e8e8e8;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+.submit_btn:hover {
+    cursor: pointer;
+    background-color: darkgray;
+    color: white;
+}
+.removeBtn {
+    width: 130px;
+    height: 46px;
+    font-size: 16px;
+    margin: auto;
+    margin-top: 20px;
+}
+#removeItemBtn {
+    margin: auto;
+    margin-top: 15px 0 15px 0;
+}
+header {
+    text-align: center;
+    margin: auto;
+    margin-top: 20px;
+    width: 80%;
+}
+
+
+.formInput {
+    font-size: 15px;
+    height: 20px;
+}
+label {
+    font-size: 18px;
+    color: #edf2f4;
+    margin-right: 15px;
+}
+@media (max-width: 768px) { label {
+    margin-right: 0px;
+}}
+textarea {
+  padding: 10px;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  height: 300px;
+  width: 500px;
+}
+hr {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+select {
+    width: 200px;
+    height: 33px;
+}
+#button_small {
+    font-size: 18px;
+    margin-top: 15px;
+    width: 90%;
+}
+table {
+    font-size: 18px;
+    padding-top: 15px;
+    margin: auto;
+    font-family:sans-serif;
+    width: 80%;
+    table-layout: fixed;
+    th, td {
+        padding: 3px;
+    }
+    td {
+        background-color: #eee;
+        width: 10%;
+        text-align:left;
+    }
+    tr {
+        border: 1px solid gray;
+    }
+    th {
+        text-align: center;
+        background-color: #009;
+        color: #fff;
+        width: 10%;
+    }
+}
+.table_fill {
+    width: 95%;
+}
+.table_top {
+    padding-top: 0;
+}
+#categoryFilter, #size1Filter, #size2Filter, #size3Filter, #fittingFilter {
+    font-size: 15px;
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+}
+h2 {
+    margin: 10px;
+    font-weight: 600;
+    font-size: 30px;
+    color: #edf2f4;
+}
+@media (max-width: 768px) {
+h2 {
+    font-size: 20px;
+}}
+p {
+    color: #edf2f4;
+}
+h1 {
+    font-weight: 700;
+    font-size: 50px;
+    color: #edf2f4;
+    padding-bottom: 20px;
+}
+@media (max-width: 768px) {
+h1 {
+    font-size: 30px;
+}}
+h3 {
+    font-weight: 500;
+    color: #edf2f4;
+    margin-bottom: 5px;
+}
+
+#header {
+    width: 100%;
+}
+#container {
+    width: 100%;
+    margin: auto;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+li {
+    font-size: 18px;
+}
+ul {
+    padding-bottom: 10px;
+    color: #edf2f4;
+}
+.full-center {
+    padding: 200px 0;
+}
+
+@media (max-width: 768px) {
+.full-center { padding: 100px 0;
+    }
+}
+@media (min-width: 768px) { .top-label {
+  position: absolute;
+  left: -8px;       /* fine-tune this distance */
+  top: 50%;
+  transform: translate(-100%, -50%);
+  white-space: nowrap;  /* prevents label from breaking into 2 lines */
+}}
+@media (max-width: 768px) { #search-label {
+    display: none;
+}}
+@media (min-width: 768px) { #search-label {
+    display: inline-block;
+    align-content: center;
+}}
+@media (min-width: 768px) { .filter-row {
+  position: relative;
+  width: fit-content;
+  margin: 15px auto; /* auto left/right centers the block */
+}}
+@media (max-width: 768px) { .top-label {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    font-size: 14px;
+}}
+@media (max-width: 768px) { #categoryFilter, #size1Filter, #size2Filter, #size3Filter, #fittingFilter {
+    display: block;
+    margin: auto;
+    font-size: 15px;
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    margin: auto;
+}}
+#jobTypeFilter {
+    display: block;
+    font-size: 15px;
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    margin: auto;
+}
+#session-toast, #toastMessage {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-weight: bold;
+}
+#toastMessage {
+  display: none; /* default hidden */
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f44336;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 10000;
+  font-weight: bold;
+  max-width: 80vw;
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+@media (max-width: 768px) { #session-toast, #toastMessage {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    width: 80%;
+    background-color: #f44336;
+    color: white;
+    padding: 10px 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-weight: bold;
+}}
+
+/* Hide elements on screens smaller than 768px */
+@media screen and (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px;
+    text-align: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 150px;
+    height: 35px;
+    z-index: 1000;
+    background-color: #e8e8e8;
+    border: solid 1px black;
+    text-decoration: none;
+    color: black;
+    font-family: sans-serif;
+    border-radius: 5px;
+}
+.home:hover {
+    background-color: darkgray;
+    color: white;
+}
+.topnav {
+  background-color: #03071e;
+  overflow: hidden;
+  height: 75px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  color: #f2f2f2;
+  text-align: center;
+  justify-content: center; /* centers links horizontally */
+  padding: 10px 12px;
+  text-decoration: none;
+  font-size: 17px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  width: 80px;
+}
+@media (min-width: 768px) { .topnav a {
+    width: 150px;
+    font-size: 21px;
+}}
+@media (min-width: 768px) { .topnav .home-nav {
+    width: 90px;
+}}
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #edf2f4;
+  color: black;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: #ba181b;
+  color: white;
+}
+
+.topnav a.active:hover {
+  background-color: #720026;
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
+#NWFSlogo {
+  margin-left: auto;
+  margin-right: 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 768px) { #NWFSlogo {
+    margin-right: 8px;
+}}
+
+#NWFSlogo img {
+  height: 80%;
+  width: auto;
+  display: block;
+}
+#JobUpdate, #DatabaseUpdate {
+    margin-bottom: 15px;
+}
+@media (min-width: 768px) { #JobUpdate, #DatabaseUpdate {
+    width: 330px;
+    margin-right: 0;
+    margin-bottom: 15px;
+
+}}
+@media (max-width: 768px) { #JobUpdate1 {
+    height: 75px;
+}}
+th.itm-cat,
+td.itm-cat {
+  width: 5%;
+  text-align: center;
+}
+th.tool-num,
+td.tool-num {
+  width: 6%;
+}
+th.tool-status,
+td.tool-status {
+  width: 6%;
+}
+@media (min-width: 768px) {
+    th.tool-status,
+    td.tool-status,
+    th.tool-num,
+    td.tool-num {
+    width: 3%;
+}}
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+}
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    padding: 20px 10px 20px 10px;
+    border-radius: 8px;
+    width: 380px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+    color: black;
+    vertical-align: middle;
+}
+@media (max-width: 768px) { .modal-content {
+    width: 80%;
+    padding: 10px 25px;
+}}
+#modalQuantityInput {
+    width: 130px;
+    height: 22px;
+    font-size: 14px;
+    text-align: center;
+    color: black;
+}
+#modalDescriptionText {
+    padding-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 18px;
+    color: black;
+}
+#modalDescriptionText2 {
+    padding-bottom: 5px;
+    margin-top: 10px;
+    color: black;
+}
+
+#removeModal .modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: black;
+}
+.modal.active {
+  display: flex;
+  color: black;
+}
+#removeModal.active {
+  display: flex;
+  color: black;
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #666;
+    line-height: .6;
+}
+.close:hover {
+    color: black;
+}
+#confirmAddItem {
+    width: 150px;
+    height: 44px;
+    font-size: 14px;
+    text-align: center;
+}
+@media (max-width: 768px) { #confirmAddItem {
+    width: 120px;
+}}
+#modalQuantityInput {
+   height: 41px;
+   width: 150px;
+}
+@media (max-width: 768px) { #modalQuantityInput {
+    width: 120px;
+}}
+@media (max-width: 768px) { #need_to {
+    font-size: 15px;
+}}
+#grabbed, #staged {
+    font-size: 18px;
+}
+
+select option {
+  text-align: center;
+  text-align-last: center;
+  margin-right: 0;
+  padding: 0;
+
+}
+
+#first {
+    flex-basis: 34%;
+}
+#second {
+    flex-basis: 65%;
+    border-left: 3px solid lightgray;
+}
+.flex-container {
+  display: flex;
+  flex-wrap: wrap; /* allows wrapping on smaller screens */
+  width: 100%;
+}
+#first2 {
+    flex-basis: 34%;
+}
+#second2 {
+    flex-basis: 65%;
+    border-left: 3px solid lightgray;
+}
+@media (max-width: 768px) {
+.flex-container { flex-direction: column;
+    }
+}
+@media (max-width: 768px) {
+#first2, #second2, #first, #second { flex-basis: 100%;
+       float: none;
+       border-left: none;
+       display: block;
+       border-top: 3px solid lightgray;
+    }
+}
+#clear {
+    clear: both;
+}
+#itemTable {
+    margin-top: 0px;
+}
+#itemTable tbody tr {
+    cursor: pointer;
+}
+#itemTable tbody tr:hover {
+    background-color: #f0f0f0;
+}
+td button.remove-btn {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    margin: 0;
+}
+#addCustomItem {
+    width: 150px;
+    height: 50px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+#customQty {
+    width: 120px;
+    height: 35px;
+}
+#customDesc {
+    width: 300px;
+    height: 35px;
+}
+@media (max-width: 768px) {
+#customQty {
+    width: 60%;
+    margin-top: 10px;
+}}
+@media (max-width: 768px) {
+#customDesc {
+    width: 60%;
+    margin: 6px;
+    margin-bottom: 10px;
+}}
+#homeButton {
+    width: 33px;
+    height: 30px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+.hidden-col {
+  display: none;
+}
+.hidden-col-size-dependant {
+    display: none;
+}
+@media screen and (min-width: 768px) {
+    .hidden-col-size-dependant {
+        display: table-cell; /* restores <td> visibility */
+    }
+}
+
+.overlay {
+  position: fixed; /* covers the whole viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(128, 128, 128, 0.4); /* translucent gray */
+  z-index: 9999;
+  pointer-events: all;
+}
+
+.status-banner {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: white;
+}
+
+.status-banner.approved {
+  background-color: #4caf50; /* green */
+}
+
+.status-banner.denied {
+  background-color: #f44336; /* red */
+}
+/* Modal styles */
+.hidden {
+display: none;
+}
+
+#modal-backdrop {
+position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(0, 0, 0, 0.5);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+
+#modal-backdrop.hidden {
+display: none;
+}
+
+#modal-backdrop .modal-content {
+padding: 1.5rem 2rem;
+border-radius: 12px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+max-width: 400px;
+width: 90%;
+text-align: center;
+}
+
+/* Button styles */
+.btn-9 {
+background-color: #1f2937; /* dark slate gray */
+color: white;
+padding: 0.6rem 1.4rem;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+font-weight: 600;
+margin: 0 0.5rem 1rem 0;
+transition: background-color 0.3s ease;
+}
+
+.btn-9:hover {
+background-color: #374151; /* lighter slate */
+}
+
+/* Modal buttons */
+.modal-button-yes {
+background-color: #22c55e; /* green */
+color: black;
+font-size: 25px;
+padding: 0.5rem 1rem;
+border-radius: 10px;
+border: none;
+cursor: pointer;
+margin-right: 1rem;
+transition: background-color 0.3s ease;
+width: 40%;
+}
+
+.modal-button-yes:hover {
+background-color: #16a34a; /* darker green */
+}
+
+.modal-button-cancel {
+background-color: #d1d5db; /* gray */
+color: black;
+font-size: 25px;
+padding: 0.5rem 1rem;
+border-radius: 10px;
+border: none;
+cursor: pointer;
+transition: background-color 0.3s ease;
+width: 40%;
+}
+
+.modal-button-cancel:hover {
+background-color: #9ca3af; /* darker gray */
+}
+.modal-content p {
+    color: black;
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+
+table button {
+  all: unset; /* resets nearly all styles */
+  background-color: #f44336;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: block; /* makes it clickable across full width */
+  width: 100%;
+  padding-left: 5px;
+}
+table button:hover,
+table button:focus,
+table button:active {
+    color: black;
+    background-color: transparent;
+    outline: none;
+    box-shadow: none;
+}
+
+
+.swap-cell-btn,
+.custom-part-btn {
+  font-size: 21px;         /* Adjust text size */
+  font-weight: normal;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+  user-select: none;       /* Prevent text selection on double-click */
+}
+
+/* Style just for custom part button */
+.custom-part-btn {
+  color: red;
+  font-weight: bold;
+}
+
+/* Ensure no highlight on focus or click */
+.swap-cell-btn:focus,
+.swap-cell-btn:active,
+.custom-part-btn:focus,
+.custom-part-btn:active {
+  outline: none !important;
+  background: none !important;
+  color: red !important;
+  box-shadow: none !important;
+}
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background-color: #f0f0f0;
+}
+
+
+.toggle-container {
+  display: flex;  /* makes the whole thing occupy a line */
+  text-align: center; /* optional, if you still want centering */
+  margin: 15px auto 0px auto;
+  width: fit-content;
+  align-items: center;
+
+}
+.toggle-label, .switch {
+    margin-top: 15px;
+}
+/* container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+/* hide the checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* slider background */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+/* knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+/* checked background */
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+/* knob slides right */
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* optional spacing for label */
+.toggle-label {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.btn-9,
+.btn-9 *,
+.btn-9 :after,
+.btn-9 :before,
+.btn-9:after,
+.btn-9:before {
+  border: 0 solid;
+  box-sizing: border-box;
+}
+.btn-9 {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: button;
+  background-color: #000;
+  background-image: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1.5;
+  margin: 0;
+  margin-bottom: 10px;
+  -webkit-mask-image: -webkit-radial-gradient(#000, #fff);
+  padding: 0;
+  text-transform: uppercase;
+}
+@media (max-width: 768px) {
+.btn-9 { font-size: 19px;
+}}
+.btn-9:disabled {
+  cursor: default;
+}
+.btn-9:-moz-focusring {
+  outline: auto;
+}
+.btn-9 svg {
+  display: block;
+  vertical-align: middle;
+}
+.btn-9 [hidden] {
+  display: none;
+}
+.btn-9 {
+  border-radius: 99rem;
+  border-width: 2px;
+  overflow: hidden;
+  padding: 0.8rem 3rem;
+  position: relative;
+}
+.btn-9 span {
+  mix-blend-mode: difference;
+}
+.btn-9:after,
+.btn-9:before {
+  --tilt: 1.2rem;
+  background: #fff;
+  -webkit-clip-path: polygon(
+    0 0,
+    calc(100% - var(--tilt)) 0,
+    100% 50%,
+    calc(100% - var(--tilt)) 100%,
+    0 100%
+  );
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--tilt)) 0,
+    100% 50%,
+    calc(100% - var(--tilt)) 100%,
+    0 100%
+  );
+  content: "";
+  display: block;
+  height: 100%;
+  left: calc(-100% - var(--tilt));
+  position: absolute;
+  top: 0;
+  transform: translateX(var(--progress, 0));
+  transition: transform 0.2s ease;
+  width: calc(100% + var(--tilt));
+}
+.btn-9:after {
+  left: 100%;
+  transform: translateX(var(--progress, 0)) rotate(180deg);
+  z-index: -1;
+}
+.btn-9:hover:before {
+  --progress: 100%;
+}
+.btn-9:hover:after {
+  --progress: -100%;
+}
+
+/* CSS */
+.button-59 {
+  align-items: center;
+  background-color: #fff;
+  border: 2px solid #000;
+  box-sizing: border-box;
+  color: #000;
+  cursor: pointer;
+  display: inline-flex;
+  fill: #000;
+  font-size: 15px;
+  height: 48px;
+  justify-content: center;
+  letter-spacing: -.8px;
+  line-height: 24px;
+  min-width: 50px;
+  outline: 0;
+  text-align: center;
+  text-decoration: none;
+  transition: all .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 230px;
+  height: 37px;
+  margin: auto;
+  margin-top: 35px;
+  margin-bottom: 20px;
+  border-radius: 0;
+}
+
+.button-59:focus {
+  color: #171e29;
+}
+
+.button-59:hover {
+  border-color: #06f;
+  color: #06f;
+  fill: #06f;
+}
+
+.button-59:active {
+  border-color: #06f;
+  color: #06f;
+  fill: #06f;
+}
+
+@media (max-width: 768px) {
+  .button-59 {
+
+  }
+}
+/* Force reset color when we clear */
+.button-59.resetting {
+  pointer-events: none;
+  border-color: #000 !important;
+  color: #000 !important;
+  fill: #000 !important;
+}
+
+.btn-70,
+.btn-70 *,
+.btn-70 :after,
+.btn-70 :before,
+.btn-70:after,
+.btn-70:before {
+  border: 0 solid;
+  box-sizing: border-box;
+}
+.btn-70 {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: button;
+  background-color: #000;
+  background-image: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-size: 100%;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-mask-image: -webkit-radial-gradient(#000, #fff);
+  padding: 0;
+}
+.btn-70:disabled {
+  cursor: default;
+}
+.btn-70:-moz-focusring {
+  outline: auto;
+}
+.btn-70 svg {
+  display: block;
+  vertical-align: middle;
+}
+.btn-70 [hidden] {
+  display: none;
+}
+.btn-70 {
+  box-shadow: inset 0 0 0 2px #fff;
+  box-sizing: border-box;
+  display: block;
+  font-weight: 900;
+  padding: 1.2rem 3rem;
+  position: relative;
+  text-transform: uppercase;
+  transition: color 0.1s linear;
+}
+.btn-70:after,
+.btn-70:before {
+  content: "";
+  position: absolute;
+}
+.btn-70:before {
+  border-bottom: var(--border);
+  border-top: var(--border);
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+.btn-70:hover:before {
+  --border: 4px solid #000;
+  -webkit-animation: border-top-and-bottom 1s forwards;
+  animation: border-top-and-bottom 1s forwards;
+}
+.btn-70:after {
+  border-left: var(--border);
+  border-right: var(--border);
+  bottom: 50%;
+  right: 0;
+  transform: translateY(50%);
+  width: 100%;
+  z-index: -1;
+}
+.btn-70:hover:after {
+  --border: 4px solid #000;
+  -webkit-animation: border-right-and-left 1s forwards;
+  animation: border-right-and-left 1s forwards;
+}
+@-webkit-keyframes border-top-and-bottom {
+  0% {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes border-top-and-bottom {
+  0% {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@-webkit-keyframes border-right-and-left {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 100%;
+  }
+}
+@keyframes border-right-and-left {
+  0% {
+    height: 0;
+  }
+  to {
+    height: 100%;
+  }
+}
+.btn-70 {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+
+
+
+
+.form {
+  position: relative;
+  display: inline-block;
+  max-width: 700px;
+  min-width: 500px;
+  box-sizing: border-box;
+  padding: 30px 25px;
+  background-color: white;
+  border-radius: 40px;
+  margin: 40px 0;
+}
+@media (max-width: 768px) {
+.form { width: 90%;
+        min-width: 75%;
+    }
+}
+form h1 {
+  color: rgba(255, 74, 86, 1);
+  font-weight: 200;
+  letter-spacing: 0.01em;
+  margin-left: 15px;
+  margin-bottom: 35px;
+  text-transform: uppercase;
+}
+
+form .question {
+  position: relative;
+  padding: 10px 0;
+  padding-top: 0;
+}
+@media (max-width: 768px) {
+.form button{ width: 100%;
+        min-width: 100%;
+    }
+}
+form .question label {
+  position: absolute;
+  top: 12px; /* Adjust to match input height */
+  left: 20px;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.53, 0.01, 0.35, 1.5);
+  transform-origin: left center;
+  font-size: 17px;
+  color: rgba(255, 74, 86, 1);
+}
+form .question textarea,
+form .question select,
+form .question input[type="date"],
+form .question input[type="text"] {
+  height: 50px; /* You can adjust this */
+  line-height: 50px; /* This centers text vertically */
+  padding: 0 20px; /* Side padding only */
+  border-radius: 60px;
+  border: 1px solid rgba(255, 74, 86, 1);
+  font-size: 24px;
+  color: rgba(255, 74, 86, 1);
+  font-weight: 200;
+  letter-spacing: 0.01em;
+  background: none;
+  transition: all 0.25s cubic-bezier(0.53, 0.01, 0.35, 1.5);
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  margin-top: 30px;
+}
+form .question textarea,
+form .question input[type="date"],
+form .question input[type="text"]:focus {
+  outline: none;
+  background: rgba(255, 74, 86, 1);
+  color: white;
+  margin-top: 30px;
+}
+form .question textarea,
+form .question input[type="date"],
+form .question input[type="text"]:valid {
+  margin-top: 30px;
+}
+form .question input[type="text"]:focus ~ label {
+  transform: translate(0, -35px);
+}
+form .question.static-label label {
+    transform: translate(0, -35px);
+    pointer-events: none;
+    position: absolute;
+}
+form .question textarea,
+form .question input[type="date"] {
+  background-color: transparent;
+  border: 1px solid rgba(255, 74, 86, 1); /* your $red */
+  color: rgba(255, 74, 86, 1);
+  border-radius: 60px;
+  letter-spacing: 0.01em;
+  box-sizing: border-box;
+  width: 100%;
+  appearance: none; /* removes default styles in some browsers */
+  margin-bottom: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(29%) sepia(96%) saturate(628%) hue-rotate(337deg) brightness(101%) contrast(92%);
+}
+form .question input[type="text"].has-content ~ label,
+form .question input[type="text"]:focus ~ label {
+  transform: translate(0, -35px);
+}
+@media (max-width: 768px) {
+.form textarea{ width: 90%;
+        min-width: 90%;
+    }
+}

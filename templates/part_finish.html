@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Part Finish</title>
+{% endblock %}
+
+{% block body %}
+<header><h1>Thank You for Submitting Your Part Form</h1></header>
+
+    <a href="{{ url_for('home_bp.home') }}"><button class="btn-9" type="button"><span>Finish</span></button></a>
+{% endblock %}
