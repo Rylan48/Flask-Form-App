@@ -117,11 +117,23 @@ This is a **Flask-based Python web application** demo version of the NW Fire Sys
   - `lxml`
   - `dropbox`
   - `gunicorn` — Optional
+  - 
+Clone the repository:
 
+ ```bash
+ git clone <repo_url>
+ cd <repo_name>
+ ```
+   
 Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Start the Flask app
+```bash
+python FormApp.py
 ```
 
 ---
