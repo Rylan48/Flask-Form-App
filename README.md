@@ -121,8 +121,8 @@ This is a **Flask-based Python web application** demo version of the NW Fire Sys
 Clone the repository:
 
  ```bash
- git clone <repo_url>
- cd <repo_name>
+ git clone https://github.com/Rylan48/Flask-Form-App-Demo.git
+ cd Flask-Form-App-Demo
  ```
    
 Install dependencies:
