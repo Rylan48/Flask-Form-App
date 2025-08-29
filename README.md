@@ -4,17 +4,17 @@
 
 ## Overview
 
-This project is a **Flask-based Python web application** that manages NW Fire Systems’ tool and inventory operations. It provides an interactive interface for users to submit forms, view tool logs, and manage parts, while handling all **Excel-based inventory data stored in Dropbox**. The app also integrates with the **Spectrum API** and **ServiceTrade API** to submit requisitions, transfer items, and keep inventory up-to-date.
+This is a **Flask-based Python web application** demo version of the NW Fire Systems tool and inventory management system. For portfolio purposes, it uses **local demo data** stored in a `demo_data/` folder instead of real Dropbox files. All interactions with the **Spectrum API** and **ServiceTrade API** are simulated, so no real company accounts are accessed.  
 
 **Key features include:**
 
-- Web-based forms for submitting parts and service requests.
-- Fetching and formatting tool logs for display.
-- Updating tool status for requests and returns.
-- Logging all tool transactions in a dedicated history sheet.
-- Submitting job requisitions and transfers via API.
+- Web-based forms for submitting parts and service requests using demo data.
+- Fetching and formatting tool logs for display from local files.
+- Updating tool status for requests and returns in the demo environment.
+- Logging all tool transactions to local history files.
+- Simulated API requests for job requisitions and inventory transfers.
 - Safe handling of Excel files with in-memory processing.
-- Error tracking and reporting for inventory operations.
+- Error tracking and reporting for demo inventory operations.
 
 ---
 
